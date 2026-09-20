@@ -2,6 +2,8 @@
 
 本项目采用“本地开发、GitHub 保存版本、云端拉取”的单向主流程。代码在本地完成并验证后提交到 GitHub，云节点只通过 Git 拉取同一版本，不直接把私密资料或临时文件推入版本库。
 
+当前版本库：`https://github.com/appergb/403-forbidden`。仓库为 private，默认分支为 `main`。云端 deploy key 仅具备读取权限。
+
 ## 入口
 
 - [git-workflow.md](git-workflow.md)：本地提交、GitHub 推送和云端同步。

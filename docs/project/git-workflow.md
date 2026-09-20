@@ -2,6 +2,8 @@
 
 项目采用本地开发、GitHub 保存版本、云端拉取的流程。云端不作为日常编辑副本，避免本地和云端各自产生无法合并的改动。
 
+当前 GitHub 版本库为 `https://github.com/appergb/403-forbidden`，默认分支为 `main`。本地负责提交和推送，云端使用只读 deploy key 拉取。
+
 ## 标准流程
 
 ### 本地开发
