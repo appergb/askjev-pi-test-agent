@@ -8,7 +8,7 @@
 
 - [git-workflow.md](git-workflow.md)：本地提交、GitHub 推送和云端同步。
 - [security.md](security.md)：敏感信息排除、扫描和提交前检查。
-- [../private/README.local.md](../private/README.local.md)：本机私密源资料索引，不提交。
+- `../private/README.local.md`：本机私密源资料索引，不提交。
 
 ## 版本库边界
 

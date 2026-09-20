@@ -6,11 +6,11 @@
 
 | 文件 | 内容 | 是否提交 GitHub |
 | --- | --- | --- |
-| [agent.local.md](agent.local.md) | 本次核查得到的精确节点身份和详细资料 | 否 |
-| [access.local.md](access.local.md) | Spark 云节点原访问与使用手册的结构化版本 | 否 |
-| [environment.local.md](environment.local.md) | 含精确身份信息的环境快照 | 否 |
+| `agent.local.md` | 本次核查得到的精确节点身份和详细资料 | 否 |
+| `access.local.md` | Spark 云节点原访问与使用手册的结构化版本 | 否 |
+| `environment.local.md` | 含精确身份信息的环境快照 | 否 |
 | [environment.md](environment.md) | 脱敏环境快照 | 是 |
-| [login.local.md](login.local.md) | 登录表整理后的本地凭据 | 否 |
+| `login.local.md` | 登录表整理后的本地凭据 | 否 |
 | [packages.md](packages.md) | `base` 与 `h3-comfy` 的 Python 包清单 | 是 |
 
 ## 公开使用规则

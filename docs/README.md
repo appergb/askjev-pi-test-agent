@@ -10,13 +10,13 @@
 | [cloud-node/](cloud-node/README.md) | Spark 节点登录、访问手册、环境与包清单 | 说明可提交，精确资料仅本地 |
 | [plan/](plan/README.md) | Plan 连接方式和 SDK 配置 | 说明可提交，地址和密钥仅本地 |
 | [project/](project/README.md) | 本地开发、GitHub 和云端同步 | 可提交，已脱敏 |
-| [private/](private/README.local.md) | 原始 `xlsx`、`docx`、Plan 地址和本地登录资料 | 永不提交 |
+| `private/` | 原始 `xlsx`、`docx`、Plan 地址和本地登录资料 | 永不提交 |
 
 ## 使用顺序
 
 1. 先读 [agent.md](agent.md)，了解节点能力和禁止事项。
 2. 云节点操作读 [cloud-node/README.md](cloud-node/README.md)。精确登录信息只读本地的 `cloud-node/login.local.md`。
-3. Plan 接入读 [plan/README.md](plan/README.md)。原始连接资料只读本地私密区，不复制密钥到代码或公开文档。
+3. Plan 接入读 [plan/README.md](plan/README.md)。原始连接资料只读本地 `private/`，不复制密钥到代码或公开文档。
 4. Git 工作流读 [project/README.md](project/README.md)，本地完成代码后提交并推送，再让云端 `pull --ff-only`。
 
 ## 私密资料位置
