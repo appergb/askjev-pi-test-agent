@@ -1,0 +1,20 @@
+.DS_Store
+.mimosa/
+
+# Local credentials, connection details and original source attachments
+docs/private/
+docs/**/*.local.md
+docs/**/*.local.txt
+docs/**/*.local.json
+docs/**/*.local.yaml
+docs/**/*.local.yml
+
+# Keep these ignored if they are ever copied back to the project root
+/Spark云节点访问与使用手册.docx
+/登录信息表.xlsx
+/阶月星辰 Pro plan 连接地址，禁止上传 GitHub。.md
+
+# Environment files
+.env
+.env.*
+!.env.example
