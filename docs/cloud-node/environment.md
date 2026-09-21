@@ -40,4 +40,8 @@
 - 用户目录下的既有项目未修改。
 - 本次初始化只创建了云端 Git 工作区，由 GitHub 版本库负责同步。
 
+## 后续状态
+
+`2026-09-20` 已在同一节点部署 Open JEV BF16 评分服务和 SGLang NVFP4 Agent 服务。上面的“没有镜像和容器”只是初始盘点时的历史状态。当前已验收状态见 [model-deployment.md](model-deployment.md)。
+
 完整原始快照位于本机的 `environment.local.md`，不进入 GitHub。

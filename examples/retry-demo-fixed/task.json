@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "project": "examples/retry-demo-fixed",
+  "files": [
+    "store.mjs",
+    "requirements.md"
+  ],
+  "requirement_file": "requirements.md",
+  "objective": "Verify the TaskStore contract. Cover normal creation, quantity boundaries, invalid inputs, idempotent and conflicting retries, and detached list objects. Use executable evidence to distinguish failures.",
+  "budget": {
+    "max_duration_seconds": 600,
+    "max_cases": 8,
+    "max_model_turns": 18,
+    "max_test_attempts": 2
+  },
+  "model": "flash-direct"
+}

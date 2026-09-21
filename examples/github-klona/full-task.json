@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "project": "artifacts/github/klona",
+  "files": [
+    "src/full.js",
+    "readme.md",
+    "package.json"
+  ],
+  "requirement_file": "readme.md",
+  "objective": "Assess the klona/full export from unchanged src/full.js against its public readme contract. Independently test ordinary and valid edge construction of the supported types, binary views with internal state, nested objects, Symbol and non-enumerable properties. Check structural equivalence and independent mutation. Use at most 8 focused cases and retain normal baseline. Do not require cyclic graph support. Import ../src/full.js.",
+  "budget": {
+    "max_duration_seconds": 300,
+    "max_cases": 8,
+    "max_model_turns": 22,
+    "max_test_attempts": 2,
+    "min_cases": 6
+  },
+  "model": "flash-direct",
+  "baseline": {
+    "framework": "uvu",
+    "files": [
+      "src/full.js",
+      "src/index.js",
+      "src/json.js",
+      "src/lite.js",
+      "test/full.js",
+      "test/index.js",
+      "test/json.js",
+      "test/lite.js",
+      "test/suites/api.js",
+      "test/suites/array.js",
+      "test/suites/boolean.js",
+      "test/suites/class.js",
+      "test/suites/date.js",
+      "test/suites/descriptor.js",
+      "test/suites/dictionary.js",
+      "test/suites/function.js",
+      "test/suites/index.js",
+      "test/suites/map.js",
+      "test/suites/nullish.js",
+      "test/suites/number.js",
+      "test/suites/object.js",
+      "test/suites/pollution.js",
+      "test/suites/regexp.js",
+      "test/suites/set.js",
+      "test/suites/string.js",
+      "test/suites/symbol.js",
+      "test/suites/typedarray.js"
+    ],
+    "entrypoints": [
+      "test/full.js"
+    ]
+  }
+}

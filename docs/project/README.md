@@ -1,8 +1,8 @@
 # 项目协作与同步
 
-本项目采用“本地开发、GitHub 保存版本、云端拉取”的单向主流程。代码在本地完成并验证后提交到 GitHub，云节点只通过 Git 拉取同一版本，不直接把私密资料或临时文件推入版本库。
+本项目采用本地开发、GitHub 保存版本的流程。代码在本地完成并验证后提交到独立私有仓库；模型服务仍通过私密配置连接。发布源码不等于变更云节点部署。
 
-当前版本库：`https://github.com/appergb/403-forbidden`。仓库为 private，默认分支为 `main`。云端 deploy key 仅具备读取权限。
+当前主仓库：[appergb/askjev-pi-test-agent](https://github.com/appergb/askjev-pi-test-agent)，private，默认分支 `main`。本地 `origin` 指向新仓库。原 `appergb/403-forbidden` 保留为 `legacy-origin`；其云端 deploy key 不被假定具备新仓库权限。
 
 ## 入口
 

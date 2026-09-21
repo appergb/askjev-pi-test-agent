@@ -18,3 +18,17 @@ docs/**/*.local.yml
 .env
 .env.*
 !.env.example
+
+# MVP runtime and isolated evidence
+node_modules/
+artifacts/
+.runtime/
+*.local.json
+
+# Logs, editor files and Python build/cache output
+*.log
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv/
+coverage/

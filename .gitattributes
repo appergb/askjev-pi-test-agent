@@ -1,0 +1,4 @@
+# Unified diffs require leading context spaces and may contain whitespace-only lines.
+*.patch -whitespace
+# Preserve the supplied Markdown specification's intentional two-space line breaks.
+docs/mvp/requirements-v0.1.md whitespace=-blank-at-eol

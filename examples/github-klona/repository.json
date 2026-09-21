@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/lukeed/klona.git",
+  "commit": "e563341d88f433e74a9b4c3c0372d4ba55d2f79e",
+  "license": "MIT",
+  "checkout": "artifacts/github/klona"
+}

@@ -1,0 +1,26 @@
+diff --git a/src/full.js b/src/full.js
+index b5f86c3..9a7df37 100644
+--- a/src/full.js
++++ b/src/full.js
+@@ -29,7 +29,7 @@ export function klona(x) {
+ 	} else if (str === '[object RegExp]') {
+ 		tmp = new RegExp(x.source, x.flags);
+ 	} else if (str === '[object DataView]') {
+-		tmp = new x.constructor( klona(x.buffer) );
++		tmp = new x.constructor( klona(x.buffer), x.byteOffset, x.byteLength );
+ 	} else if (str === '[object ArrayBuffer]') {
+ 		tmp = x.slice(0);
+ 	} else if (str.slice(-6) === 'Array]') {
+diff --git a/src/index.js b/src/index.js
+index 4b866ba..9712987 100755
+--- a/src/index.js
++++ b/src/index.js
+@@ -64,7 +64,7 @@ export function klona(x) {
+ 	}
+ 
+ 	if (str === '[object DataView]') {
+-		return new x.constructor( klona(x.buffer) );
++		return new x.constructor( klona(x.buffer), x.byteOffset, x.byteLength );
+ 	}
+ 
+ 	if (str === '[object ArrayBuffer]') {

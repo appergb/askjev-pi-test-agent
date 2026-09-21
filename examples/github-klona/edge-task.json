@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "project": "artifacts/github/klona",
+  "files": [
+    "src/index.js",
+    "readme.md",
+    "package.json"
+  ],
+  "requirement_file": "readme.md",
+  "objective": "Perform a second, focused boundary assessment of the default klona export. The initial happy-path suite passed, so prioritize documented supported binary data types and objects with internal state: evaluate structural equivalence and independent mutation for valid non-default constructor arguments, empty and boundary inputs, and nested combinations. Derive concrete cases yourself from readme.md and src/index.js; do not assume a defect and do not test unsupported cyclic graphs. Use at most 8 focused cases, retain a normal baseline, and import unchanged ../src/index.js.",
+  "budget": {
+    "max_duration_seconds": 300,
+    "max_cases": 8,
+    "max_model_turns": 22,
+    "max_test_attempts": 2,
+    "min_cases": 6
+  },
+  "model": "flash-direct",
+  "baseline": {
+    "framework": "uvu",
+    "files": [
+      "test/full.js",
+      "test/index.js",
+      "test/json.js",
+      "test/lite.js",
+      "test/suites/api.js",
+      "test/suites/array.js",
+      "test/suites/boolean.js",
+      "test/suites/class.js",
+      "test/suites/date.js",
+      "test/suites/descriptor.js",
+      "test/suites/dictionary.js",
+      "test/suites/function.js",
+      "test/suites/index.js",
+      "test/suites/map.js",
+      "test/suites/nullish.js",
+      "test/suites/number.js",
+      "test/suites/object.js",
+      "test/suites/pollution.js",
+      "test/suites/regexp.js",
+      "test/suites/set.js",
+      "test/suites/string.js",
+      "test/suites/symbol.js",
+      "test/suites/typedarray.js",
+      "src/full.js",
+      "src/json.js",
+      "src/lite.js"
+    ],
+    "entrypoints": [
+      "test/index.js"
+    ]
+  }
+}

@@ -2,20 +2,20 @@
 
 项目采用本地开发、GitHub 保存版本、云端拉取的流程。云端不作为日常编辑副本，避免本地和云端各自产生无法合并的改动。
 
-当前 GitHub 版本库为 `https://github.com/appergb/403-forbidden`，默认分支为 `main`。本地负责提交和推送，云端使用只读 deploy key 拉取。
+当前 GitHub 主仓库为 `https://github.com/appergb/askjev-pi-test-agent`（private），默认分支为 `main`。`origin` 指向该仓库，原文档仓库保留为 `legacy-origin`。只有明确需要同步云节点且确认新仓库访问权限后，才执行云端拉取；本次仓库发布不修改云节点。
 
 ## 标准流程
 
 ### 本地开发
 
 ```bash
-git checkout -b feature/<short-name>
+git checkout -b Beta/<short-name>
 # 在本地编辑和验证
 git status --short
 git diff --check
 git add <code-and-public-docs>
 git commit -m "Describe the change"
-git push -u origin feature/<short-name>
+git push -u origin Beta/<short-name>
 ```
 
 ### 合并到主分支

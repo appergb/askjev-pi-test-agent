@@ -12,6 +12,7 @@
 | [environment.md](environment.md) | 脱敏环境快照 | 是 |
 | `login.local.md` | 登录表整理后的本地凭据 | 否 |
 | [packages.md](packages.md) | `base` 与 `h3-comfy` 的 Python 包清单 | 是 |
+| [model-deployment.md](model-deployment.md) | 已完成的 Spark 单机双模型部署、验收结果和操作方式 | 是 |
 
 ## 公开使用规则
 

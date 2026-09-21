@@ -1,0 +1,103 @@
+{
+  "version": "1.1.0",
+  "repository": "https://github.com/lukeed/klona",
+  "commit": "e563341d88f433e74a9b4c3c0372d4ba55d2f79e",
+  "known_injected_bugs": false,
+  "independent_bug_classes_confirmed": 1,
+  "affected_implementation_files": [
+    "src/index.js",
+    "src/full.js"
+  ],
+  "reproduction_records": 3,
+  "upstream_tests_original": 137,
+  "upstream_tests_fixed": 137,
+  "pi_regression_tests_passed": 16,
+  "infrastructure_tests_passed": 25,
+  "initial_full_attempt_accepted_as_coverage": false,
+  "runs": {
+    "klona-real-result.json": {
+      "run_id": "run-2026-09-21T13-55-56-425Z-0f256b",
+      "run_status": "completed",
+      "statistics": {
+        "planned": 10,
+        "scored": 10,
+        "executed_cases": 10,
+        "passed_cases": 10,
+        "failed_cases": 0,
+        "executed_tests": 10,
+        "confirmed_findings": 0,
+        "model_turns": 7,
+        "test_attempts": 10
+      }
+    },
+    "klona-edge-result.json": {
+      "run_id": "run-2026-09-21T13-57-42-561Z-48ebf5",
+      "run_status": "completed",
+      "statistics": {
+        "planned": 8,
+        "scored": 8,
+        "executed_cases": 8,
+        "passed_cases": 7,
+        "failed_cases": 1,
+        "executed_tests": 8,
+        "confirmed_findings": 1,
+        "model_turns": 6,
+        "test_attempts": 8
+      }
+    },
+    "klona-full-result.json": {
+      "run_id": "run-2026-09-21T13-59-48-449Z-751661",
+      "run_status": "completed",
+      "statistics": {
+        "planned": 1,
+        "scored": 1,
+        "executed_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "executed_tests": 1,
+        "confirmed_findings": 0,
+        "model_turns": 15,
+        "test_attempts": 1
+      }
+    },
+    "klona-full-v11-result.json": {
+      "run_id": "run-2026-09-21T14-02-41-465Z-4b917e",
+      "run_status": "completed",
+      "statistics": {
+        "planned": 8,
+        "scored": 8,
+        "executed_cases": 8,
+        "passed_cases": 6,
+        "failed_cases": 2,
+        "executed_tests": 8,
+        "confirmed_findings": 2,
+        "model_turns": 6,
+        "test_attempts": 8
+      }
+    },
+    "klona-regression-result.json": {
+      "run_id": "regression-d94a68dd-8a8c-476d-a1bb-c3de73357a99",
+      "run_status": "completed",
+      "statistics": {
+        "executed_cases": 8,
+        "passed_cases": 8,
+        "failed_cases": 0
+      }
+    },
+    "klona-full-regression-result.json": {
+      "run_id": "regression-2cf0921d-7200-4bae-b768-f0e067b8b630",
+      "run_status": "completed",
+      "statistics": {
+        "executed_cases": 8,
+        "passed_cases": 8,
+        "failed_cases": 0
+      }
+    }
+  },
+  "limitations": [
+    "Scoped JavaScript on macOS only",
+    "Initial smoke test missed the bug; a directed valid-boundary task exposed it",
+    "Three true-failure cases received supported=1 from scoring backend",
+    "No autonomous push to arbitrary coding-agent sessions or MCP server"
+  ]
+}
