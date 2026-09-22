@@ -9,7 +9,7 @@ npm ci --ignore-scripts
 npm test
 mkdir -p artifacts/releases
 npm pack --ignore-scripts --pack-destination artifacts/releases
-npm install -g --ignore-scripts ./artifacts/releases/403-forbidden-askjev-agent-1.4.0.tgz
+npm install -g --ignore-scripts ./artifacts/releases/403-forbidden-askjev-agent-1.5.0.tgz
 askjev --version
 ```
 
@@ -68,3 +68,7 @@ askjev feedback --from /absolute/path/to/run-directory --regression /absolute/pa
 1.3 前端浏览器执行、--select 策略及冻结比较 replay 见 [前端测试](frontend-testing.md)。需要本机 Google Chrome，使用 `askjev doctor --browser` 验证。
 
 1.4 独立技能自动安装与匹配版本调用见 [技能安装](skill-installation.md)，后台会话及清空/重开见 [会话管理](sessions.md)。Skill 的私有安装不会替换全局 CLI，请通过技能 wrapper 或 install.json 中的绝对命令路径使用它。
+
+## 多轮自动测试（1.5）
+
+`campaign --request TASK --select all --rounds 3 --max-seconds 600 --max-model-turns 60` 执行有限多轮补查与原测试失败重现。后台使用 `session campaign --id ID`，查询/取消沿用原有会话命令。`--scoring-failure all` 仅允许全量选测降级；默认 strict。详见 [持续任务说明](campaigns.md)。

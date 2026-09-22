@@ -6,7 +6,7 @@ import os from 'node:os';
 import http from 'node:http';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { ROOT } from '../src/common.mjs';
+import { ROOT, VERSION } from '../src/common.mjs';
 import { doctor, probeModel } from '../src/application.mjs';
 
 const exec = promisify(execFile);
@@ -21,7 +21,7 @@ test('standalone CLI works via npm-style symlink outside checkout and refuses ov
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'askjev-cli-'));
   try {
     const bin = path.join(root, 'askjev'); await fs.symlink(path.join(ROOT, 'src/cli.mjs'), bin);
-    assert.match((await cli(['--version'], root, bin)).stdout, /askJEV Agent 1\.4\.0/);
+    assert.equal((await cli(['--version'], root, bin)).stdout.trim(), `askJEV Agent ${VERSION}`);
     const result = await cli(['init'], root, bin);
     assert.equal(result.code, 0, result.stdout);
     const file = path.join(root, 'home/config.json');

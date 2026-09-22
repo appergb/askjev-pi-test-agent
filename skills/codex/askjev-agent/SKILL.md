@@ -19,4 +19,6 @@ Choose session lifecycle intentionally:
 
 session run is asynchronous. Retain session ID and job ID, inspect and read logs until the task completes. If the host returns control before completion, keep following the same job rather than starting a duplicate. Read last_result, report and cited actual execution evidence. Failure/incomplete/cancelled are not clean passes. Numeric selection leaves excluded cases untested; low support scores are not user behavior probabilities and high scores do not establish correctness.
 
+For sustained testing, use campaign or session campaign with explicit round, wall-time and model-turn budgets. Read [campaigns](references/campaigns.md) before doing so. Campaigns use fresh conversations per round and automatically repeat failed executions; repeated records are not independent bugs.
+
 Consume handoff before changing business code. Verify the requirement and actual assertion. Fix business implementation, then regress on the fixed checkout with byte-identical saved tests and record feedback. Only claim a successful loop if the generated tests and configured baseline pass. Do not automatically publish issues, PRs, or messages. Do not install or modify cloud services as part of local installation.

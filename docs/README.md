@@ -1,8 +1,10 @@
 # askJEV Agent 文档
 
+持续测试见 [campaigns.md](campaigns.md)，视频工程见 [video/README.md](../video/README.md)。
+
 编码模型技能安装见 [skill-installation.md](skill-installation.md)，会话管理见 [sessions.md](sessions.md)。
 
-评分选测目标架构见 [设计文档](architecture/scoring-selection-v2.md) 与 [SVG](architecture/scoring-selection-v2.svg)；NVIDIA 技术核对见 [技术清单](architecture/nvidia-stack.md)。目标架构未作为 1.4 已实现能力发布。
+评分选测目标架构见 [设计文档](architecture/scoring-selection-v2.md) 与 [SVG](architecture/scoring-selection-v2.svg)；NVIDIA 技术核对见 [技术清单](architecture/nvidia-stack.md)。1.5 已实现质量诊断与显式故障降级；hybrid 与校准仍为目标设计。
 
 独立 CLI 使用见 [cli.md](cli.md)，架构见 [framework.md](framework.md)，排查能力缺口见 [diagnostic-roadmap.md](diagnostic-roadmap.md)。
 

@@ -30,3 +30,7 @@ askjev session restart --id <session-id>
 状态通常为 idle → starting → running → completed/partial/failed/cancelled。completed 与测试无 bug 不等价，需读取 last_result 的 assessment、未执行项和证据。后台工作进程意外死亡时 inspect 标为 interrupted，可 clear 回收；没有用复用风险较高的 PID 强杀陌生进程。活进程尚未响应取消时 clear/restart 拒绝清理，不假装停止成功。
 
 数据位于 `ASKJEV_HOME/sessions/<id>/`：context 为私密对话，runs 为每轮快照与结果。clear 仅清上下文，不删除源码证据、报告、最后提交的任务或连接配置；它不是彻底的数据擦除命令。原有一次性 `askjev run` 保持独立、无持久对话的行为。
+
+## 持续任务（1.5）
+
+`session campaign --id ID --request TASK --select all --rounds 3 --max-seconds 600 --max-model-turns 60` 提交有限多轮任务，生命周期命令保持一致。每轮独立对话，历史单轮会话不参与 campaign；结果包含各轮与失败复现的证据。restart 不指定新请求时保留上一 campaign 预算。详见 [campaigns.md](campaigns.md)。

@@ -14,7 +14,7 @@ export async function loadConfig(file) {
   return config;
 }
 
-export async function modelRuntime(config, label, runtimeDir) {
+export async function modelRuntime(config, label, runtimeDir, beforeRequest) {
   const entry = config.models[label];
   check(entry?.definition, 'Model alias is not configured');
   const definition = { ...entry.definition, maxTokens: Math.min(entry.definition.maxTokens ?? 4096, 4096) };
@@ -35,14 +35,17 @@ export async function modelRuntime(config, label, runtimeDir) {
   const model = runtime.getModel('mvp', definition.id);
   check(model, 'Model registration failed');
   const stream = runtime.streamSimple.bind(runtime);
-  runtime.streamSimple = (m, context, options) => stream(m, context, { ...options, maxTokens: 4096, temperature: 0,
+  runtime.streamSimple = (m, context, options) => {
+    beforeRequest?.();
+    return stream(m, context, { ...options, maxTokens: 4096, temperature: 0,
     ...(entry.chat_template_kwargs ? { onPayload: async (payload, resolvedModel) => ({ ...((await options?.onPayload?.(payload, resolvedModel)) ?? payload), chat_template_kwargs: entry.chat_template_kwargs }) } : {}),
-  });
+    });
+  };
   return { runtime, model };
 }
 
-export async function createPi({ config, label, cwd, tools, systemPrompt, runtimeDir, conversation }) {
-  const { runtime, model } = await modelRuntime(config, label, runtimeDir);
+export async function createPi({ config, label, cwd, tools, systemPrompt, runtimeDir, conversation, beforeModelRequest }) {
+  const { runtime, model } = await modelRuntime(config, label, runtimeDir, beforeModelRequest);
   const settingsManager = SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: false }, transport: 'sse' });
   const loader = new DefaultResourceLoader({ cwd, agentDir: runtimeDir, settingsManager,
     noExtensions: true, noSkills: true, noPromptTemplates: true, noThemes: true, noContextFiles: true,

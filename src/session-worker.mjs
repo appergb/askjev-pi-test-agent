@@ -4,6 +4,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { sessionDirectory, atomicJSON } from './sessions.mjs';
 import { readJSON } from './common.mjs';
 import { loadConfig } from './model.mjs';
+import { runCampaign } from './campaign.mjs';
 import { runTask } from './runner.mjs';
 
 process.umask(0o077);
@@ -30,9 +31,10 @@ try {
   await poll();
   timer = setInterval(() => { void poll(); }, 200);
   const config = await loadConfig(job.config);
-  const result = await runTask(job.task, config, { signal: controller.signal, outputRoot: path.join(dir, 'runs'), conversation: { directory: path.join(dir, 'context'), generation: job.generation, session_id: id },
+  const runOptions = { signal: controller.signal, outputRoot: path.join(dir, 'runs'),
     progress: (message) => { const stage = message.match(/\] ([a-z_]+)/)?.[1] || 'progress'; void fs.appendFile(path.join(dir, 'progress.jsonl'), JSON.stringify({ job: token, at: new Date().toISOString(), stage }) + '\n', { mode: 0o600 }).catch(() => {}); },
-  });
+  };
+  const result = job.campaign ? await runCampaign(job.task, config, { ...runOptions, ...job.campaign }) : await runTask(job.task, config, { ...runOptions, conversation: { directory: path.join(dir, 'context'), generation: job.generation, session_id: id } });
   await atomicJSON(path.join(dir, 'state.json'), { ...state, status: result.run_status, finished_at: new Date().toISOString(), last_result: result.artifacts.result, assessment: result.assessment, statistics: result.statistics });
 } catch {
   if (state?.job === token) await atomicJSON(path.join(dir, 'state.json'), { ...state, status: controller.signal.aborted ? 'cancelled' : 'failed', error_code: 'SESSION_RUN_FAILED', hint: 'Check configuration and session evidence; clear interrupted context before retrying.' });

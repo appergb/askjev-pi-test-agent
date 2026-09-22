@@ -1,6 +1,6 @@
 # 给编码模型的独立技能安装包
 
-**请使用你的 ChatGPT Codex 安装该技能。** 将 `askjev-agent-skill-1.4.0.tar.gz` 交给具有本地文件和终端执行能力的编码 Agent，并要求它解压后执行 `askjev-agent/scripts/install.mjs`。安装脚本完成真正的依赖安装；只读取或复制 SKILL.md 不会自动执行程序。
+**请使用你的 ChatGPT Codex 安装该技能。** 将 `askjev-agent-skill-1.5.0.tar.gz` 交给具有本地文件和终端执行能力的编码 Agent，并要求它解压后执行 `askjev-agent/scripts/install.mjs`。安装脚本完成真正的依赖安装；只读取或复制 SKILL.md 不会自动执行程序。
 
 可以直接对编码 Agent 说：
 
@@ -17,12 +17,12 @@ npm ci --ignore-scripts
 npm run package:skill
 ```
 
-产物：`artifacts/releases/askjev-agent-skill-1.4.0.tar.gz`。包中包含独立 Skill、安装和调用脚本、使用参考，以及固定版本 CLI 的 npm tarball 和 SHA-256。SHA-256 校验包内文件一致性，不是发布者身份签名。运行时 tarball 使用提交范围之外的明确文件白名单，不包含私密配置、API Key、历史会话或测试产物。
+产物：`artifacts/releases/askjev-agent-skill-1.5.0.tar.gz`。包中包含独立 Skill、安装和调用脚本、使用参考，以及固定版本 CLI 的 npm tarball 和 SHA-256。SHA-256 校验包内文件一致性，不是发布者身份签名。运行时 tarball 使用提交范围之外的明确文件白名单，不包含私密配置、API Key、历史会话或测试产物。
 
 ## 安装与第一次使用
 
 ```bash
-tar -xzf askjev-agent-skill-1.4.0.tar.gz
+tar -xzf askjev-agent-skill-1.5.0.tar.gz
 node askjev-agent/scripts/install.mjs
 node ~/.codex/skills/askjev-agent/scripts/askjev.mjs --version
 node ~/.codex/skills/askjev-agent/scripts/askjev.mjs doctor --browser
@@ -37,7 +37,7 @@ node ~/.codex/skills/askjev-agent/scripts/askjev.mjs doctor --browser
 - 内置 Agent 运行库、askJEV 评分工具和批准的测试 Skills。
 - 编码模型侧 `askjev-agent` Skill 及统一调用脚本。
 
-应用默认安装在 `~/.local/share/askjev-agent/1.4.0`；不更改 shell 配置或替换用户的全局 Pi。Skill 使用绝对路径调用自己的匹配版本，第一次调用时缺少运行时会自动补装。原生 Pi 是底层依赖，askJEV 是运行时工具，不需要另安装一个同名独立产品。
+应用默认安装在 `~/.local/share/askjev-agent/1.5.0`；不更改 shell 配置或替换用户的全局 Pi。Skill 使用绝对路径调用自己的匹配版本，第一次调用时缺少运行时会自动补装。原生 Pi 是底层依赖，askJEV 是运行时工具，不需要另安装一个同名独立产品。
 
 前提是已具备 Node.js ≥22.19 与 npm，依赖安装需要网络。本地单元测试执行需要 macOS，浏览器测试需要本机 Chrome。模型与评分连接配置仍由用户提供；安装包不携带服务端点与凭据。已有私密配置可显式引用或导入，新安装执行 init 只创建样例，不代表已连接云端。
 

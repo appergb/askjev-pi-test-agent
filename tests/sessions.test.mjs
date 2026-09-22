@@ -62,7 +62,16 @@ test('independent workers persist context, reject overlap, clear, cancel and res
     await startSession(a.id, { request, config }); const continued = await settled(a.id);
     const manifest = JSON.parse(await fs.readFile(path.join(path.dirname(continued.last_result), 'manifest.json')));
     assert.equal(manifest.conversation.resumed, true); assert.ok(observations.at(-1).prior_users > 0);
-    const cleared = await clearSession(a.id); assert.equal(cleared.generation, 2);
+    await startSession(a.id, { request, config, campaign: { rounds: 2, max_seconds: 30, max_model_turns: 20 } });
+    const campaign = await settled(a.id);
+    const campaignResult = JSON.parse(await fs.readFile(campaign.last_result));
+    assert.equal(campaignResult.type, 'test_campaign'); assert.equal(campaignResult.run_status, 'completed', JSON.stringify(campaignResult));
+    assert.equal(campaignResult.rounds.length, 2); assert.equal(campaignResult.statistics.executed_cases, 2);
+    assert.deepEqual(observations.slice(-2).map((o) => o.prior_users), [0, 0]);
+    await restartSession(a.id, { config });
+    const campaignRestarted = await settled(a.id);
+    assert.equal(JSON.parse(await fs.readFile(campaignRestarted.last_result)).type, 'test_campaign');
+    const cleared = await clearSession(a.id); assert.equal(cleared.generation, 3);
     assert.equal((await inspectSession(a.id)).context_present, false);
     assert.ok((await fs.stat(doneA.last_result)).isFile());
     await startSession(a.id, { request, config }); await settled(a.id);

@@ -30,6 +30,33 @@ export function orderItems(items, scores) {
   return [...items].sort((a, b) => Number(Boolean(b.baseline)) - Number(Boolean(a.baseline)) || (score.get(a.case_id)?.score ?? -1) - (score.get(b.case_id)?.score ?? -1));
 }
 
+// Observability, not a calibrated confidence estimate or a new selection policy.
+export function scoreQuality(items) {
+  const numeric = items.filter((s) => s.status === 'scored' && Number.isFinite(s.score));
+  const buckets = new Map();
+  for (const s of numeric) {
+    const key = s.score.toFixed(6);
+    buckets.set(key, (buckets.get(key) ?? 0) + 1);
+  }
+  const largest = Math.max(0, ...buckets.values());
+  const reasons = [];
+  if (numeric.length < items.length) reasons.push('missing_or_unknown_scores');
+  if (numeric.length > 1 && largest / numeric.length >= 0.8) reasons.push('score_ties');
+  if (numeric.length > 1 && numeric.filter((s) => s.score >= 0.999999 || s.score <= 0.000001).length / numeric.length >= 0.8) reasons.push('score_saturation');
+  return { status: reasons.length ? 'degraded' : 'unvalidated', reasons, total: items.length, numeric: numeric.length, distinct_scores_6dp: buckets.size, largest_tie: largest, calibrated: false, note: 'Diagnostics only; absence of warnings does not establish reliable ranking.' };
+}
+
+export async function scoreWithPolicy(config, prepared, snap, signal, failurePolicy = 'strict', scorer = scoreContext) {
+  try {
+    const scored = await scorer(config, prepared, snap, signal);
+    return { ...scored, quality: scoreQuality(scored.items) };
+  } catch (error) {
+    if (signal?.aborted || failurePolicy !== 'all') throw error;
+    const items = normalizeScores({ results: [] }, prepared.items);
+    return { backend_mode: 'unavailable', profile: PROFILE, profile_sha256: PROFILE_HASH, items, fallback: { policy: 'all', reason: 'scoring_unavailable', error: 'Scoring request failed; no score was fabricated.' }, quality: { ...scoreQuality(items), reasons: ['scoring_unavailable', 'missing_or_unknown_scores'] } };
+  }
+}
+
 export async function postDecision(baseUrl, body, { signal, fetcher = fetch, timeout = 20000, retries = 1, apiKey } = {}) {
   const requestId = sha(JSON.stringify(body));
   for (let attempt = 0; attempt <= retries; attempt++) {

@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { campaignLimits } from './campaign.mjs';
 import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { appHome, configPath } from './paths.mjs';
@@ -56,13 +57,15 @@ async function mutation(id, fn) {
   try { await fs.mkdir(lock); } catch (e) { if (e.code === 'EEXIST') throw busyError('Another lifecycle operation is in progress'); throw e; }
   try { return await fn(dir); } finally { await fs.rmdir(lock); }
 }
-export async function startSession(id, { request, config, model, selection } = {}) {
+export async function startSession(id, { request, config, model, selection, scoring_failure, campaign } = {}) {
   const resolvedConfig = await configPath(config);
   await fs.access(resolvedConfig);
   const task = validateTask(await readJSON(path.resolve(request)));
   task.project = await fs.realpath(path.resolve(task.project));
   if (model) task.model = model;
   if (selection) task.selection = selection;
+  if (scoring_failure) task.scoring_failure = scoring_failure;
+  if (campaign) campaign = campaignLimits(campaign);
   validateTask(task);
   return mutation(id, async (dir) => {
     const state = await readJSON(path.join(dir, 'state.json'));
@@ -71,11 +74,11 @@ export async function startSession(id, { request, config, model, selection } = {
     const token = crypto.randomUUID();
     let child;
     try {
-      const job = { token, task, config: resolvedConfig, generation: state.generation, created_at: new Date().toISOString() };
+      const job = { token, task, campaign, config: resolvedConfig, generation: state.generation, created_at: new Date().toISOString() };
       await atomicJSON(path.join(dir, 'job.json'), job);
       await atomicJSON(path.join(dir, 'busy/owner.json'), { token, launcher_pid: process.pid });
       await fs.rm(path.join(dir, 'cancel.json'), { force: true });
-      await atomicJSON(path.join(dir, 'state.json'), { ...state, status: 'starting', project: task.project, job: token, started_at: job.created_at, last_result: null, assessment: null, statistics: null, error_code: null });
+      await atomicJSON(path.join(dir, 'state.json'), { ...state, status: 'starting', job_kind: campaign ? 'campaign' : 'run', project: task.project, job: token, started_at: job.created_at, last_result: null, assessment: null, statistics: null, error_code: null });
       child = spawn(process.execPath, [path.join(ROOT, 'src/session-worker.mjs'), id, token], { detached: true, stdio: 'ignore', env: process.env });
       await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
       // The worker replaces this with its own identity; both refer to the same child.
@@ -120,7 +123,7 @@ export async function restartSession(id, options = {}) {
   if (!options.request) {
     const file = path.join(dir, 'restart-task.json');
     await atomicJSON(file, previous.task);
-    return startSession(id, { ...options, request: file, config: options.config || previous.config });
+    return startSession(id, { ...options, request: file, config: options.config || previous.config, campaign: options.campaign ?? previous.campaign });
   }
   return startSession(id, options);
 }

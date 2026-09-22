@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-export const VERSION = '1.4.0';
+export const VERSION = '1.5.0';
 export const isJavaScript = (file) => /\.(?:mjs|cjs|js)$/.test(file);
 export const ROOT = path.resolve(import.meta.dirname, '..');
 export const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
@@ -42,6 +42,10 @@ export function validateTask(t) {
   check(t.files.some(isJavaScript), 'A JavaScript source file is required');
   check(!t.files.some((f) => f.startsWith('tests/')), 'tests/ is reserved for Agent generated tests; use baseline.files for existing tests');
   validateSelection(t.selection);
+  if (t.scoring_failure !== undefined) {
+    check(['strict', 'all'].includes(t.scoring_failure), 'Invalid scoring failure policy');
+    check(t.scoring_failure !== 'all' || (t.selection?.mode ?? 'all') === 'all', 'Scoring fallback requires all selection; explicit subsets cannot be expanded');
+  }
   if (t.execution) {
     check(t.execution.type === 'browser', 'Unsupported execution type');
     check(Array.isArray(t.execution.assets) && t.execution.assets.length > 0 && t.execution.assets.every((f) => t.files.includes(f) && /\.(html|js|mjs|css|json)$/.test(f)), 'Browser assets must be approved source files');
