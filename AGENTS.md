@@ -29,4 +29,4 @@
 
 评分选测目标设计见 `docs/architecture/scoring-selection-v2.md` 与配套 SVG，NVIDIA 技术使用见 `docs/architecture/nvidia-stack.md`。这些是后续设计，不代表 1.4 已实现 hybrid/校准/独立复核。模型权重训练不得与部署及推理参数调优混称。
 
-1.5 持续任务见 `docs/campaigns.md`：campaign / session campaign 在总预算内分轮测试，默认 all，每轮独立对话，失败用原测试重现。scoring_failure=all 只允许 all 策略；strict 仍是默认。测试指纹与需求引用仅用于停滞/覆盖提示，不能作为根因去重或完整覆盖证明。质量诊断和故障降级已实现，hybrid/独立复核/校准未实现。介绍视频源码见 `video/README.md`。
+1.5 持续任务见 `docs/campaigns.md`：campaign / session campaign 在总预算内分轮测试，默认 all，每轮独立对话，失败用原测试重现。scoring_failure=all 只允许 all 策略；strict 仍是默认。测试指纹与需求引用仅用于停滞/覆盖提示，不能作为根因去重或完整覆盖证明。质量诊断和故障降级已实现，hybrid/独立复核/校准未实现。

@@ -4,9 +4,7 @@
 
 当前版本 **1.5.0，工程试用阶段**。支持明确授权的 JavaScript 模块与本地静态前端 Chrome 功能测试。测试在本地执行，云端提供生成与评分服务。
 
-[安装技能](docs/skill-installation.md) · [CLI](docs/cli.md) · [会话管理](docs/sessions.md) · [持续自动测试](docs/campaigns.md) · [介绍视频](video/README.md) · [评分架构设计](docs/architecture/scoring-selection-v2.md) · [NVIDIA 技术清单](docs/architecture/nvidia-stack.md)
-
-[![askJEV Agent 60 秒介绍视频](video/public/poster.jpg)](video/README.md)
+[安装技能](docs/skill-installation.md) · [CLI](docs/cli.md) · [会话管理](docs/sessions.md) · [持续自动测试](docs/campaigns.md) · [评分架构设计](docs/architecture/scoring-selection-v2.md) · [NVIDIA 技术清单](docs/architecture/nvidia-stack.md)
 
 ## 使用你的 ChatGPT Codex 安装
 

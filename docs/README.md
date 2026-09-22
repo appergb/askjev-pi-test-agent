@@ -1,6 +1,6 @@
 # askJEV Agent 文档
 
-持续测试见 [campaigns.md](campaigns.md)，视频工程见 [video/README.md](../video/README.md)。
+持续测试见 [campaigns.md](campaigns.md)。
 
 编码模型技能安装见 [skill-installation.md](skill-installation.md)，会话管理见 [sessions.md](sessions.md)。
 
