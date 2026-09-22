@@ -1,0 +1,8 @@
+{
+  "fixture_type": "purpose-built frontend with two seeded defects; not a blind external benchmark",
+  "excluded_from_agent_context": true,
+  "defects": [
+    {"id": "shipping-threshold", "location": "app.js", "actual": "subtotal > 100", "expected": "subtotal >= 100", "witness": "quantity=5, ship, no coupon: total 105.00 instead of 100.00"},
+    {"id": "coupon-rate", "location": "app.js", "actual": "subtotal * 0.05", "expected": "subtotal * 0.10", "witness": "quantity=2, ship, SAVE10: total 43.00 instead of 41.00"}
+  ]
+}

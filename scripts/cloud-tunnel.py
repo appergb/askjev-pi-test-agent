@@ -16,7 +16,15 @@ def main():
     parser.add_argument('action', choices=['start', 'stop', 'status'])
     parser.add_argument('--config', default=str(ROOT / 'docs/private/mvp-config.local.json'))
     args = parser.parse_args()
-    config = json.loads(Path(args.config).read_text())['ssh']
+    config_file = Path(args.config).resolve()
+    config = json.loads(config_file.read_text())['ssh']
+    if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.-]*', config['user']) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.:-]*', config['host']):
+        raise ValueError('Invalid SSH identity')
+    if not 1 <= int(config['port']) <= 65535 or not config.get('forwards'):
+        raise ValueError('Invalid SSH connection')
+    for key in ('control_socket', 'login_document'):
+        if config.get(key) and not Path(config[key]).is_absolute():
+            config[key] = str(config_file.parent / config[key])
     socket = Path(config['control_socket'])
     destination = config['user'] + '@' + config['host']
     common = ['ssh', '-o', 'StrictHostKeyChecking=yes', '-o', 'ConnectTimeout=15', '-S', str(socket), '-p', str(config['port'])]
@@ -55,6 +63,6 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except (OSError, ValueError, KeyError, subprocess.TimeoutExpired):
+    except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired):
         print(json.dumps({'ok': False, 'error': 'Check private SSH configuration and known host credentials.'}))
         sys.exit(1)

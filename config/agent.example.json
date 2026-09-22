@@ -7,14 +7,28 @@
         "api": "openai-completions",
         "baseUrl": "https://model-provider.example/v1",
         "reasoning": false,
-        "input": ["text"],
+        "input": [
+          "text"
+        ],
         "contextWindow": 32768,
         "maxTokens": 4096,
-        "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0},
-        "compat": {"supportsStore": false, "supportsDeveloperRole": false, "maxTokensField": "max_tokens"}
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStore": false,
+          "supportsDeveloperRole": false,
+          "maxTokensField": "max_tokens"
+        }
       },
-      "api_key_env": "PI_TEST_API_KEY"
+      "api_key_env": "ASKJEV_API_KEY"
     }
   },
-  "scoring": { "baseUrl": "http://127.0.0.1:18081" }
+  "scoring": {
+    "baseUrl": "http://127.0.0.1:18081"
+  },
+  "default_model": "flash-direct"
 }

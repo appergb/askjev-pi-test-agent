@@ -2,10 +2,14 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { InMemoryCredentialStore } from '@earendil-works/pi-ai';
 import { ModelRuntime, DefaultResourceLoader, SessionManager, SettingsManager, createAgentSession } from '@earendil-works/pi-coding-agent';
-import { ROOT, readJSON, check } from './common.mjs';
+import { readJSON, check } from './common.mjs';
 
-export async function loadConfig(file = process.env.PI_TEST_CONFIG || path.join(ROOT, 'docs/private/mvp-config.local.json')) {
-  const config = await readJSON(file);
+import { configPath } from './paths.mjs';
+
+export async function loadConfig(file) {
+  const resolved = await configPath(file);
+  const config = await readJSON(resolved);
+  for (const entry of Object.values(config.models ?? {})) if (entry.auth_file && !path.isAbsolute(entry.auth_file)) entry.auth_file = path.resolve(path.dirname(resolved), entry.auth_file);
   check(config.models && typeof config.scoring?.baseUrl === 'string', 'Invalid private model configuration');
   return config;
 }
@@ -37,7 +41,7 @@ export async function modelRuntime(config, label, runtimeDir) {
   return { runtime, model };
 }
 
-export async function createPi({ config, label, cwd, tools, systemPrompt, runtimeDir }) {
+export async function createPi({ config, label, cwd, tools, systemPrompt, runtimeDir, conversation }) {
   const { runtime, model } = await modelRuntime(config, label, runtimeDir);
   const settingsManager = SettingsManager.inMemory({ compaction: { enabled: false }, retry: { enabled: false }, transport: 'sse' });
   const loader = new DefaultResourceLoader({ cwd, agentDir: runtimeDir, settingsManager,
@@ -45,8 +49,26 @@ export async function createPi({ config, label, cwd, tools, systemPrompt, runtim
     systemPromptOverride: () => systemPrompt, appendSystemPromptOverride: () => [],
   });
   await loader.reload();
+  let sessionManager = SessionManager.inMemory(cwd);
+  let resumed = false;
+  if (conversation) {
+    const directory = conversation.directory;
+    await fs.mkdir(directory, { recursive: true, mode: 0o700 });
+    const pointer = await readJSON(path.join(directory, 'current.json')).catch((e) => { if (e.code === 'ENOENT') return null; throw e; });
+    if (pointer) {
+      check(typeof pointer.file === 'string' && path.basename(pointer.file) === pointer.file && pointer.file.endsWith('.jsonl'), 'Invalid saved session pointer');
+      const file = path.join(directory, pointer.file);
+      const stat = await fs.lstat(file).catch((e) => { if (e.code === 'ENOENT') return null; throw e; });
+      if (stat) {
+        check(!stat.isSymbolicLink() && stat.size <= 2000000, 'Session context is invalid or too large; clear it');
+        sessionManager = SessionManager.open(file, directory, cwd);
+        resumed = true;
+      } else sessionManager = SessionManager.create(cwd, directory);
+    } else sessionManager = SessionManager.create(cwd, directory);
+    await fs.writeFile(path.join(directory, 'current.json'), JSON.stringify({ file: path.basename(sessionManager.getSessionFile()) }), { mode: 0o600 });
+  }
   const { session } = await createAgentSession({ cwd, agentDir: runtimeDir, modelRuntime: runtime, model, thinkingLevel: 'off',
     tools: tools.map((tool) => tool.name), customTools: tools, resourceLoader: loader,
-    sessionManager: SessionManager.inMemory(cwd), settingsManager });
-  return { session, model };
+    sessionManager, settingsManager });
+  return { session, model, conversation_resumed: resumed };
 }

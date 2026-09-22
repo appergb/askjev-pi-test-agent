@@ -1,4 +1,10 @@
-# askJEV Pi 测试智能体文档
+# askJEV Agent 文档
+
+编码模型技能安装见 [skill-installation.md](skill-installation.md)，会话管理见 [sessions.md](sessions.md)。
+
+评分选测目标架构见 [设计文档](architecture/scoring-selection-v2.md) 与 [SVG](architecture/scoring-selection-v2.svg)；NVIDIA 技术核对见 [技术清单](architecture/nvidia-stack.md)。目标架构未作为 1.4 已实现能力发布。
+
+独立 CLI 使用见 [cli.md](cli.md)，架构见 [framework.md](framework.md)，排查能力缺口见 [diagnostic-roadmap.md](diagnostic-roadmap.md)。
 
 本目录按来源和用途整理项目资料。公开文档只保留可提交到 GitHub 的脱敏内容，精确 IP、端口、密码、API Key、原始表格和原始手册均放在本地私密区，并由 `.gitignore` 排除。
 

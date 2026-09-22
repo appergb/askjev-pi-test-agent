@@ -1,6 +1,6 @@
 # 私密配置与任务接口
 
-配置对象包含 `models`、`scoring` 和可选的 `ssh`。可运行配置仅保存在 `docs/private/`；示例不含真实地址或密钥。连接资料不进入 Git。
+配置对象包含可选 `default_model`、`models`、`scoring` 和可选的 `ssh`。1.2 默认配置保存在 `~/.askjev-agent/config.json`，兼容开发 checkout 的 `docs/private/`；示例不含真实地址或密钥。连接资料不进入 Git。
 
 首次安装可使用 [agent.example.json](../../config/agent.example.json)，复制到本机忽略目录后填写实际模型 ID、地址和凭据引用。样例字段均为占位，成本字段为零不表示服务免费；按实际供应商资料配置。本机已有配置不要覆盖。
 
@@ -39,3 +39,5 @@ Pi 可以通过 readProject 返回的 requirement_refs ID 引用需求。适配�
 结果的 run_status 表示完成程度，assessment 表示发现情况。退出码：0 完成且无确认问题，1 完成且有确认问题，2 输入/配置无效，3 失败/受阻，4 部分完成或结论不完整，5 已取消。
 
 已确认缺陷必须引用实际断言失败与预期来源。修复回归校验保存测试的内容摘要；测试被改动则拒绝复用。回归使用新源码快照，不复用旧评分。
+
+1.2 独立应用安装、配置查找顺序、连接与检查命令见 [CLI 说明](../cli.md)。`auth_file` 相对配置文件所在目录解析。`run` 的默认生成模型依次取 `--model`、任务 `model`、配置 `default_model`、`flash-direct`。
