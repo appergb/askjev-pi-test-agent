@@ -33,11 +33,13 @@ node ~/.codex/skills/askjev-agent/scripts/askjev.mjs doctor --browser
 安装器自动安装：
 
 - 固定版本 askJEV Agent CLI 与锁定的 npm 依赖。
-- `askjev`、`askJEV`、`pi-test-agent` 三个兼容命令入口，指向同一应用。
+- `askjev`、`askJEV`、`pi-test-agent` 三个脚本命令入口，以及 `askjev-cli` 交互终端入口。
 - 内置 Agent 运行库、askJEV 评分工具和批准的测试 Skills。
 - 编码模型侧 `askjev-agent` Skill 及统一调用脚本。
 
 应用默认安装在 `~/.local/share/askjev-agent/1.5.0`；不更改 shell 配置或替换用户的全局 Pi。Skill 使用绝对路径调用自己的匹配版本，第一次调用时缺少运行时会自动补装。原生 Pi 是底层依赖，askJEV 是运行时工具，不需要另安装一个同名独立产品。
+
+技能私有安装的交互入口见 `install.json` 中 `commands.askjev-cli`；需要直接在任意终端输入 `askjev-cli` 时，可把该入口链接至已有 PATH 目录，或按 [CLI 文档](cli.md) 全局安装打包后的应用。界面品牌为 askJEV，模型由应用固定。
 
 前提是已具备 Node.js ≥22.19 与 npm，依赖安装需要网络。本地单元测试执行需要 macOS，浏览器测试需要本机 Chrome。模型与评分连接配置仍由用户提供；安装包不携带服务端点与凭据。已有私密配置可显式引用或导入，新安装执行 init 只创建样例，不代表已连接云端。
 

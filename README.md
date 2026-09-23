@@ -4,7 +4,21 @@
 
 当前版本 **1.5.0，工程试用阶段**。支持明确授权的 JavaScript 模块与本地静态前端 Chrome 功能测试。测试在本地执行，云端提供生成与评分服务。
 
+2026-09-23 发布检查：**51 项 Agent 检查、36 项 API 代理检查通过**；真实 JavaScript 与浏览器样例分别完成 8 项和 6 项测试，检出的预置缺陷在配套修复版原测试回归中全部通过。当前成熟度与比赛限制见 [完整质量评估](docs/quality-review-2026-09-23.md)。
+
 [安装技能](docs/skill-installation.md) · [CLI](docs/cli.md) · [会话管理](docs/sessions.md) · [持续自动测试](docs/campaigns.md) · [评分架构设计](docs/architecture/scoring-selection-v2.md) · [NVIDIA 技术清单](docs/architecture/nvidia-stack.md)
+
+## 交互终端
+
+安装 CLI 后，在项目目录运行：
+
+```bash
+askjev-cli
+```
+
+进入带有 **askJEV** 标识的终端对话界面，可输入需求与已有 `task.json` 路径，或输入 `/run <task.json>` 直接执行原有测试流程。界面显示对话、测试进度、执行数量和报告路径；`/help` 查看命令，Esc 停止任务，Ctrl+D 退出。
+
+模型固定使用私密配置中的 `default_model`（缺省为 `flash-direct`），底部只显示操作提示和状态，不提供模型菜单、快捷键切换或 `--model` 参数。任务文件中的 `model` 不会覆盖该设置。`askjev-cli --project <目录> --config <私密配置>` 可指定工作目录与配置。每次启动是新对话，`/clear` 清空本次对话并保留测试证据。脚本和后台会话仍使用 `askjev`。[安装与命令说明](docs/cli.md)
 
 ## 使用你的 ChatGPT Codex 安装
 

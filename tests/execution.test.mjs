@@ -55,3 +55,17 @@ test('empty test programs cannot be reported as a passing suite', { skip: proces
   await fs.writeFile(path.join(workspace, 'empty.test.mjs'), '');
   assert.notEqual((await executeTest(workspace, 'empty.test.mjs')).classification, 'passed');
 }));
+
+test('host coverage collection cannot make a passing sandboxed test fail', { skip: process.platform !== 'darwin' }, async () => fixture(async (root, workspace) => {
+  const previous = process.env.NODE_V8_COVERAGE;
+  const destination = path.join(root, 'host-coverage');
+  process.env.NODE_V8_COVERAGE = destination;
+  try {
+    await fs.writeFile(path.join(workspace, 'pass.test.mjs'), prefix + "test('pass',()=>assert.equal(1,1));");
+    const result = await executeTest(workspace, 'pass.test.mjs');
+    assert.equal(result.classification, 'passed', result.stdout + result.stderr);
+    assert.equal(await fs.access(destination).then(() => true, () => false), false);
+  } finally {
+    if (previous === undefined) delete process.env.NODE_V8_COVERAGE; else process.env.NODE_V8_COVERAGE = previous;
+  }
+}));

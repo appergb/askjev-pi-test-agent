@@ -35,6 +35,9 @@ export async function install({ prefix, skillsDir, registerSkill = true } = {}) 
     }
     const { stdout } = await exec(process.execPath, [entry, '--version'], { timeout: 20000 });
     if (stdout.trim() !== `askJEV Agent ${manifest.version}`) throw new Error('Installed CLI version mismatch');
+    const terminalEntry = path.join(destination, 'node_modules/.bin/askjev-cli');
+    const terminal = await exec(process.execPath, [terminalEntry, '--version'], { timeout: 20000 });
+    if (terminal.stdout.trim() !== `askJEV ${manifest.version}`) throw new Error('Installed terminal version mismatch');
     const capitalAlias = path.join(destination, 'node_modules/.bin/askJEV');
     try { await fs.symlink('askjev', capitalAlias); }
     catch (e) {
@@ -54,7 +57,7 @@ export async function install({ prefix, skillsDir, registerSkill = true } = {}) 
       await fs.mkdir(target, { recursive: true, mode: 0o700 });
       await fs.cp(skillRoot, target, { recursive: true, filter: (source) => !['install.json'].includes(path.basename(source)) });
     }
-    const receipt = { managed_by: 'askjev-agent-installer', version: manifest.version, sha256: manifest.sha256, prefix: destination, entry, skill_directory: target, commands: Object.fromEntries(['askjev', 'askJEV', 'pi-test-agent'].map((name) => [name, path.join(destination, 'node_modules/.bin', name)])) };
+    const receipt = { managed_by: 'askjev-agent-installer', version: manifest.version, sha256: manifest.sha256, prefix: destination, entry, skill_directory: target, commands: Object.fromEntries(['askjev', 'askJEV', 'askjev-cli', 'pi-test-agent'].map((name) => [name, path.join(destination, 'node_modules/.bin', name)])) };
     await save(path.join(target, 'install.json'), receipt);
     return { ...receipt, cli_ready: true, model_configuration_required: true, note: 'CLI and approved Skills are installed. API keys, cloud configuration, Node.js and Chrome are not bundled.' };
   } finally { await fs.rmdir(lock); }

@@ -23,6 +23,7 @@ export function exitCode(result) {
 const HELP = `askJEV Agent ${VERSION} — 优化过的 Agent 框架
 
 用法：askjev <command> [options]
+交互终端：askjev-cli                            askJEV 对话界面，模型由应用固定
   init [--config <file>] [--import-config <file>]  初始化私密配置；不覆盖已有文件
   example --directory <new-directory>            创建可运行的缺陷 demo
   connect <start|status|stop> [--config <file>]   管理 DGX Spark / 云节点 SSH 隧道

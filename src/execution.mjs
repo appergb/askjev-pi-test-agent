@@ -31,7 +31,9 @@ export async function executeTest(workspace, testFile, { signal, timeout = 10000
   const start = performance.now();
   const result = await new Promise((resolve) => {
     let stdout = '', stderr = '', ended = false, stop_reason = null;
-    const child = spawn('/usr/bin/sandbox-exec', args, { cwd, env: { PATH: '/usr/bin:/bin', HOME: cwd, TMPDIR: cwd, LANG: 'en_US.UTF-8', OPENSSL_CONF: '/dev/null' }, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    // Node propagates NODE_V8_COVERAGE even to an explicit env; sandboxed tests
+    // must not inherit the host runner's writable coverage destination.
+    const child = spawn('/usr/bin/sandbox-exec', args, { cwd, env: { PATH: '/usr/bin:/bin', HOME: cwd, TMPDIR: cwd, LANG: 'en_US.UTF-8', OPENSSL_CONF: '/dev/null', NODE_V8_COVERAGE: '' }, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
     const kill = (reason) => { stop_reason ||= reason; try { process.kill(-child.pid, 'SIGKILL'); } catch {} };
     const timer = setTimeout(() => kill('timeout'), timeout);
     const abort = () => kill('cancelled');

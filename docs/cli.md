@@ -1,6 +1,6 @@
 # 独立 CLI 使用说明
 
-应用名为 **askJEV Agent**，主命令为 `askjev`。安装需要 Node.js ≥22.19；测试执行目前支持 macOS，连接 SSH 时还需要 Python 3 与系统 SSH。已完整验证的 Node 布局为 macOS Homebrew。
+应用名为 **askJEV Agent**，交互终端命令为 `askjev-cli`，脚本命令为 `askjev`。安装需要 Node.js ≥22.19；测试执行目前支持 macOS，连接 SSH 时还需要 Python 3 与系统 SSH。已完整验证的 Node 布局为 macOS Homebrew。
 
 ## 从源码制作安装包
 
@@ -11,9 +11,31 @@ mkdir -p artifacts/releases
 npm pack --ignore-scripts --pack-destination artifacts/releases
 npm install -g --ignore-scripts ./artifacts/releases/403-forbidden-askjev-agent-1.5.0.tgz
 askjev --version
+askjev-cli
 ```
 
 安装包采用文件白名单，包含运行时、Skills、脱敏配置、demo 和锁定依赖清单。私密文件、业务快照、日志及真实连接信息不打包。尚未发布到 npm registry；不要假定可从 registry 直接下载同名包。全局安装路径需对当前用户可写；也可使用 `npm install --prefix <directory> <archive>` 后调用其 `node_modules/.bin/askjev`。
+
+## 交互终端 askjev-cli
+
+`askjev-cli` 无参数启动 askJEV 对话界面。可指定 `--project <目录>` 和 `--config <私密配置文件>`。普通文字交给 Pi 对话会话，测试与回归通过原有 askJEV 执行器完成；仅有任务、报告与回归工具，不开放通用 shell 或业务代码编辑工具。
+
+| 命令 | 作用 |
+| --- | --- |
+| `/run <task.json>` | 按任务声明的文件范围、预算和选测策略执行测试 |
+| `/report [运行目录]` | 读取指定结果；省略目录时读取本次最近的结果 |
+| `/doctor` | 检查本地测试环境与评分连接；不发起生成模型探测 |
+| `/clear` | 清空当前模型对话，保留测试证据 |
+| `/cancel` | 取消正在进行的操作 |
+| `/help`、`/exit` | 查看帮助、退出 |
+
+输入 `帮我测试 /absolute/path/task.json` 也可调用测试；缺少任务文件时会提示提供范围和预算。可在原终端通过 `askjev example --directory <新目录>` 创建示例任务。任务的 `project` 相对启动工作目录解析，与脚本 CLI 一致；跨目录使用优先写绝对路径。路径含空格时 `/run` 支持整段路径或带引号路径。
+
+模型使用本次进程首次加载的私密配置 `default_model`，未配置时使用 `flash-direct`。页脚不显示模型选择器；没有 `/model`、`/models`、模型切换快捷键或 `--model` 选项，任务中的 `model` 也不能覆盖。配置只在程序重新启动后重新读取。普通 `askjev` 的模型参数保持原有行为。
+
+Enter 发送、Shift+Enter 换行、Esc 或 Ctrl+C 取消当前任务；空闲且输入框为空时 Ctrl+C / Ctrl+D 退出。退出会等待任务取消并保存已有证据。对话仅在当前进程保留，测试结果仍位于 `ASKJEV_HOME/runs`，重启后可以 `/report <运行目录>` 查看。每条对话最多 12 次模型调用，实际测试预算由任务文件单独限定。
+
+无配置时仍可打开界面和查看帮助，发送对话或运行测试前须先完成下方配置。交互终端要求 TTY；管道与自动化请使用输出 JSON 的 `askjev`。
 
 ## 配置
 

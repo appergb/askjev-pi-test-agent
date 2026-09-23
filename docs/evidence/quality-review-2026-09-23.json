@@ -1,0 +1,313 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-09-23",
+  "scope": "Release-candidate terminal, scoped Agent execution, and local API-proxy source; no cloud deployment performed.",
+  "node": {
+    "version": "v26.8.1",
+    "tests": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0,
+    "src_line_coverage_percent": 94.3,
+    "src_branch_coverage_percent": 78.44,
+    "src_function_coverage_percent": 88.36
+  },
+  "proxy": {
+    "python": "3.11.16",
+    "tests": 36,
+    "passed": 36,
+    "failed": 0,
+    "line_coverage_percent": 94.91,
+    "strict_mypy": "passed",
+    "ruff": "passed",
+    "black": "passed"
+  },
+  "npm_audit": {
+    "production_advisories": 0,
+    "assurance": "Known advisory database check only; not proof of absence of vulnerabilities."
+  },
+  "generation_probe": {
+    "initial": "MODEL_TOOL_CALL_FAILED",
+    "followup": "toolUse with connectionProbe(ok=true)",
+    "note": "Initial failure is retained. This is not an availability or long-duration reliability benchmark."
+  },
+  "integration": [
+    {
+      "kind": "node",
+      "fixture": "examples/retry-demo",
+      "run_id": "run-2026-09-23T07-40-52-359Z-163e97",
+      "snapshot_id": "1ebfb2b3456965009beac84cfc9c989e6e82ea04d55ef8e80ad9cfd8cbbda5f8",
+      "run_status": "completed",
+      "assessment": "confirmed_findings",
+      "duration_ms": 19623.541167,
+      "model_alias": "flash-direct",
+      "scoring_backend": "real",
+      "statistics": {
+        "selected": 8,
+        "skipped": 0,
+        "planned": 8,
+        "scored": 8,
+        "executed_cases": 8,
+        "passed_cases": 6,
+        "failed_cases": 2,
+        "executed_tests": 8,
+        "confirmed_findings": 2,
+        "model_turns": 6,
+        "test_attempts": 8
+      },
+      "findings": [
+        {
+          "case_id": "c02-upper-bound-10",
+          "title": "Quantity 10 rejected although R1 allows 1 through 10 inclusive",
+          "category": "confirmed_product_defect"
+        },
+        {
+          "case_id": "c06-idempotent-retry",
+          "title": "Identical retry appends a duplicate task instead of being idempotent",
+          "category": "confirmed_product_defect"
+        }
+      ],
+      "scores": [
+        {
+          "case_id": "c01-baseline-create",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "c02-upper-bound-10",
+          "score": 2.4616969573898473e-10,
+          "status": "scored"
+        },
+        {
+          "case_id": "c03-lower-bound-1",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "c04-invalid-inputs-unchanged",
+          "score": 3.6534821390432626e-8,
+          "status": "scored"
+        },
+        {
+          "case_id": "c05-insertion-order",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "c06-idempotent-retry",
+          "score": 1.605228061585251e-9,
+          "status": "scored"
+        },
+        {
+          "case_id": "c07-conflicting-retry",
+          "score": 0.000007889262633398175,
+          "status": "scored"
+        },
+        {
+          "case_id": "c08-detached-list",
+          "score": 1,
+          "status": "scored"
+        }
+      ],
+      "score_quality": {
+        "status": "degraded",
+        "reasons": [
+          "score_saturation"
+        ],
+        "total": 8,
+        "numeric": 8,
+        "distinct_scores_6dp": 3,
+        "largest_tie": 4,
+        "calibrated": false,
+        "note": "Diagnostics only; absence of warnings does not establish reliable ranking."
+      },
+      "tests": [
+        {
+          "case_id": "c01-baseline-create",
+          "file": "tests/c01-baseline-create.test.mjs",
+          "sha256": "4304801acd893255dd0efc52aa0ed71608f45612aedf790da1b3be0b1c278360"
+        },
+        {
+          "case_id": "c02-upper-bound-10",
+          "file": "tests/c02-upper-bound-10.test.mjs",
+          "sha256": "dfde80e54d1dad33417a381bda33d4fc98cbf483aa297248ce53be9494cecff6"
+        },
+        {
+          "case_id": "c03-lower-bound-1",
+          "file": "tests/c03-lower-bound-1.test.mjs",
+          "sha256": "cc2b53a8223cf90380a626309802ec4dca87ec03fe7ee5b7b1248c0dacba7202"
+        },
+        {
+          "case_id": "c04-invalid-inputs-unchanged",
+          "file": "tests/c04-invalid-inputs-unchanged.test.mjs",
+          "sha256": "d6ff79497b8200a191cfa60349fc25c64c9bbf6dc5c69f34faec65e481664ef6"
+        },
+        {
+          "case_id": "c05-insertion-order",
+          "file": "tests/c05-insertion-order.test.mjs",
+          "sha256": "0d4f1ec7b1ae1c1599d8cd284a079b599e79638767e3ec70e0dcc7dd462c8132"
+        },
+        {
+          "case_id": "c06-idempotent-retry",
+          "file": "tests/c06-idempotent-retry.test.mjs",
+          "sha256": "1dc4e10142b21c12d4d3c74acdb22934ea252bf9b90ede2c5eeb7343d3dfe7a1"
+        },
+        {
+          "case_id": "c07-conflicting-retry",
+          "file": "tests/c07-conflicting-retry.test.mjs",
+          "sha256": "8f1ea02ac57bfbd265b5597c2c4f7d12532551b153b7d30f539e88196f540d3c"
+        },
+        {
+          "case_id": "c08-detached-list",
+          "file": "tests/c08-detached-list.test.mjs",
+          "sha256": "110df2199e6d47f65062fd2df6dbde64fbea6d28a146a1a1dd37a0ba9993a6a1"
+        }
+      ],
+      "regression": {
+        "run_id": "regression-b9f86de3-273f-4ab6-ba2c-cda5593b45f5",
+        "run_status": "completed",
+        "assessment": "no_confirmed_findings",
+        "statistics": {
+          "executed_cases": 8,
+          "passed_cases": 8,
+          "failed_cases": 0
+        },
+        "tests_unchanged": true,
+        "scores_reused": false,
+        "feedback": "regression_passed"
+      }
+    },
+    {
+      "kind": "browser",
+      "fixture": "examples/frontend-shop",
+      "run_id": "run-2026-09-23T07-40-52-360Z-0873b1",
+      "snapshot_id": "2273e8fe27744f43e3fc1f39817418e657ae42df6bc24b14ac57de1444988d00",
+      "run_status": "completed",
+      "assessment": "confirmed_findings",
+      "duration_ms": 20254.978625,
+      "model_alias": "flash-direct",
+      "scoring_backend": "real",
+      "statistics": {
+        "selected": 6,
+        "skipped": 0,
+        "planned": 6,
+        "scored": 6,
+        "executed_cases": 6,
+        "passed_cases": 4,
+        "failed_cases": 2,
+        "executed_tests": 6,
+        "confirmed_findings": 2,
+        "model_turns": 6,
+        "test_attempts": 6
+      },
+      "findings": [
+        {
+          "case_id": "case-03-qty5-ship-nocoupon",
+          "title": "Free-shipping threshold off by one: subtotal exactly 100.00 still charges 5.00 shipping",
+          "category": "confirmed_product_defect"
+        },
+        {
+          "case_id": "case-05-qty2-ship-save10",
+          "title": "SAVE10 coupon applies 5% instead of the required 10% discount",
+          "category": "confirmed_product_defect"
+        }
+      ],
+      "scores": [
+        {
+          "case_id": "case-01-qty1-ship-nocoupon",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "case-02-qty3-ship-nocoupon",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "case-03-qty5-ship-nocoupon",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "case-04-qty6-ship-nocoupon",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "case-05-qty2-ship-save10",
+          "score": 1,
+          "status": "scored"
+        },
+        {
+          "case_id": "case-06-qty1-pickup-nocoupon",
+          "score": 1,
+          "status": "scored"
+        }
+      ],
+      "score_quality": {
+        "status": "degraded",
+        "reasons": [
+          "score_ties",
+          "score_saturation"
+        ],
+        "total": 6,
+        "numeric": 6,
+        "distinct_scores_6dp": 1,
+        "largest_tie": 6,
+        "calibrated": false,
+        "note": "Diagnostics only; absence of warnings does not establish reliable ranking."
+      },
+      "tests": [
+        {
+          "case_id": "case-01-qty1-ship-nocoupon",
+          "file": "tests/case-01-qty1-ship-nocoupon.browser.json",
+          "sha256": "512697cd4691b363cc465e060fb119440fb8e07fcdb4e4da68efcb3babd7ccd2"
+        },
+        {
+          "case_id": "case-02-qty3-ship-nocoupon",
+          "file": "tests/case-02-qty3-ship-nocoupon.browser.json",
+          "sha256": "de80a33bedbe1b8c9a37ad95cf37068a06438eb5a074364f34eeff9ee93f38ae"
+        },
+        {
+          "case_id": "case-03-qty5-ship-nocoupon",
+          "file": "tests/case-03-qty5-ship-nocoupon.browser.json",
+          "sha256": "e424bcff576a432ddb9f484c5ea8c8bffb3d50eefa396378f641de8764d0d171"
+        },
+        {
+          "case_id": "case-04-qty6-ship-nocoupon",
+          "file": "tests/case-04-qty6-ship-nocoupon.browser.json",
+          "sha256": "18bcd92883b96988c3ef77dee120ce19a982600c155eb26a2ddb0469f24e246d"
+        },
+        {
+          "case_id": "case-05-qty2-ship-save10",
+          "file": "tests/case-05-qty2-ship-save10.browser.json",
+          "sha256": "9f3e6259f7ad595bb3139a8d4e1bdbf1b57fdf19cc3f3e8ca8e8c64ea1cfbde4"
+        },
+        {
+          "case_id": "case-06-qty1-pickup-nocoupon",
+          "file": "tests/case-06-qty1-pickup-nocoupon.browser.json",
+          "sha256": "bba84062125c4e6776cec56947e30f68b4b15dd00b563c2e7e94cd479de47265"
+        }
+      ],
+      "regression": {
+        "run_id": "regression-b3cc1544-fa42-429a-91de-57be0b348ace",
+        "run_status": "completed",
+        "assessment": "no_confirmed_findings",
+        "statistics": {
+          "executed_cases": 6,
+          "passed_cases": 6,
+          "failed_cases": 0
+        },
+        "tests_unchanged": true,
+        "scores_reused": false,
+        "feedback": "regression_passed"
+      }
+    }
+  ],
+  "limitations": [
+    "Purpose-built fixtures with seeded defects, not a blind competition benchmark.",
+    "All six browser candidates received score=1, including two failing cases.",
+    "No accuracy, recall, ranking benefit, calibrated confidence, or production-readiness claim.",
+    "Cloud parameter experiments are ongoing; their uncommitted launch-script changes are excluded from this release."
+  ]
+}

@@ -4,6 +4,8 @@ Extract the standalone askjev-agent-skill archive. Run `node askjev-agent/script
 
 Default skill registration: `$CODEX_HOME/skills/askjev-agent`, or `~/.codex/skills/askjev-agent`. Default private CLI: `~/.local/share/askjev-agent/<version>`. Installation does not change shell profiles or replace an existing global pi/askjev installation. Use this skill's `scripts/askjev.mjs` wrapper or receipt.commands absolute paths. Skill metadata uses normal implicit invocation; if a host does not discover it yet, refresh the host's skill list.
 
+For the human-facing terminal use `receipt.commands["askjev-cli"]`. It opens an askJEV-branded conversation and runs existing task files with `/run <task.json>`. The terminal uses the configured default model and offers no model chooser. When the user requests a shell command, link that installed entry into an existing writable PATH directory without overwriting unrelated commands. Script automation continues to use the wrapper and JSON CLI.
+
 The standalone archive contains assets/runtime.tgz and assets/runtime.json (SHA-256 and version). A source-only skill checkout must be packaged by the project's `scripts/build-skill-package.mjs` first; no unpinned latest download is substituted. Installing requires network access for npm dependencies. The archive includes neither Node nor Chrome nor private credentials; install those separately only if authorized and needed.
 
 Then use the wrapper:

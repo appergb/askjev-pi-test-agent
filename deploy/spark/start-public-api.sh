@@ -9,6 +9,7 @@ user_api_key_file="$secrets_dir/agent-api-key-user"
 proxy_session="agent-api-proxy"
 tunnel_session="agent-api-tunnel"
 proxy_port="31000"
+maintenance_file="$runtime_root/maintenance.json"
 cloudflared_version="2026.9.1"
 cloudflared_sha256="3d97437c71848bd8df68041e12436b484a661d95073ea1937f01a845ce88faa3"
 cloudflared_bin="$bin_dir/cloudflared"
@@ -51,7 +52,7 @@ tmux kill-session -t "$tunnel_session" 2>/dev/null || true
 tmux kill-session -t "$proxy_session" 2>/dev/null || true
 
 tmux new-session -d -s "$proxy_session" \
-  "AGENT_OFFICIAL_API_KEY_FILE='$official_api_key_file' AGENT_USER_API_KEY_FILE='$user_api_key_file' AGENT_CANONICAL_MODEL='TRIPFZ-Alpha-27b' AGENT_UPSTREAM_BASE='http://127.0.0.1:30000' AGENT_MAX_BODY_BYTES='33554432' AGENT_USER_RATE_LIMIT_PER_MINUTE='60' AGENT_OFFICIAL_CONCURRENCY='1' AGENT_OFFICIAL_QUEUE_SIZE='8' AGENT_USER_CONCURRENCY='7' AGENT_USER_QUEUE_SIZE='64' AGENT_UPSTREAM_TIMEOUT_SECONDS='900' '$python_bin' -m uvicorn public_api_proxy:app --app-dir '$bin_dir' --host 127.0.0.1 --port '$proxy_port' --no-access-log"
+  "AGENT_OFFICIAL_API_KEY_FILE='$official_api_key_file' AGENT_USER_API_KEY_FILE='$user_api_key_file' AGENT_CANONICAL_MODEL='TRIPFZ-Alpha-27b' AGENT_UPSTREAM_BASE='http://127.0.0.1:30000' AGENT_MAX_BODY_BYTES='33554432' AGENT_USER_RATE_LIMIT_PER_MINUTE='60' AGENT_OFFICIAL_CONCURRENCY='1' AGENT_OFFICIAL_QUEUE_SIZE='8' AGENT_USER_CONCURRENCY='7' AGENT_USER_QUEUE_SIZE='64' AGENT_UPSTREAM_TIMEOUT_SECONDS='900' AGENT_MAINTENANCE_FILE='$maintenance_file' '$python_bin' -m uvicorn public_api_proxy:app --app-dir '$bin_dir' --host 127.0.0.1 --port '$proxy_port' --no-access-log"
 
 official_api_key="$(tr -d '\r\n' < "$official_api_key_file")"
 for _ in $(seq 1 30); do

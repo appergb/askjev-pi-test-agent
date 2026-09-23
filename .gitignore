@@ -32,3 +32,5 @@ __pycache__/
 *.py[cod]
 .venv/
 coverage/
+.coverage
+.coverage.*

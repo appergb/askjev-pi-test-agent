@@ -1,5 +1,7 @@
 # askJEV Agent 文档
 
+最新发布质量、终端前端/后端完成度与比赛演示评估见 [2026-09-23 质量报告](quality-review-2026-09-23.md)。
+
 持续测试见 [campaigns.md](campaigns.md)。
 
 编码模型技能安装见 [skill-installation.md](skill-installation.md)，会话管理见 [sessions.md](sessions.md)。

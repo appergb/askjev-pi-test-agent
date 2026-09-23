@@ -8,6 +8,7 @@
   },
   "bin": {
     "askjev": "src/cli.mjs",
+    "askjev-cli": "src/terminal.mjs",
     "pi-test-agent": "src/cli.mjs"
   },
   "scripts": {
@@ -18,6 +19,7 @@
   "dependencies": {
     "@earendil-works/pi-ai": "0.85.1",
     "@earendil-works/pi-coding-agent": "0.85.1",
+    "@earendil-works/pi-tui": "0.85.1",
     "jiti": "2.7.0",
     "playwright-core": "1.63.0",
     "typebox": "1.3.7",
@@ -57,6 +59,8 @@
     "docs/architecture/",
     "docs/evidence/scoring-protocol-audit-2026-09-22.json",
     "docs/campaigns.md",
-    "docs/evidence/campaign-1.5.json"
+    "docs/evidence/campaign-1.5.json",
+    "docs/quality-review-2026-09-23.md",
+    "docs/evidence/quality-review-2026-09-23.json"
   ]
 }
