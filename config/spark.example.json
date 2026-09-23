@@ -1,0 +1,31 @@
+{
+  "default_model": "spark",
+  "models": {
+    "spark": {
+      "definition": {
+        "id": "YOUR_SPARK_MODEL_ID",
+        "name": "DGX Spark generation service",
+        "api": "openai-completions",
+        "baseUrl": "http://127.0.0.1:18080/v1",
+        "reasoning": false,
+        "input": ["text"],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0},
+        "compat": {"supportsStore": false, "supportsDeveloperRole": false, "maxTokensField": "max_tokens"}
+      },
+      "chat_template_kwargs": {"enable_thinking": false}
+    }
+  },
+  "scoring": {"baseUrl": "http://127.0.0.1:18081"},
+  "ssh": {
+    "host": "YOUR_SPARK_HOST",
+    "port": 22,
+    "user": "YOUR_SSH_USER",
+    "control_socket": "spark.sock",
+    "forwards": [
+      {"local_port": 18080, "remote_port": 8000},
+      {"local_port": 18081, "remote_port": 8001}
+    ]
+  }
+}

@@ -1,129 +1,161 @@
-# askJEV · Pi 测试智能体
+# askJEV Agent
 
-基于 Pi 0.85.1 的测试专用运行时：读取选定源码和需求，通过 `askJEV` 调用评分后端，由 Pi 编写并执行测试，再把可复现缺陷交给 coding agent。coding agent 负责业务修复，原 Pi 测试负责验证修复结果。
+**面向代码测试与问题排查的优化过的 Agent 框架。** 编码 Agent 通过独立 Skill 调用 CLI，由测试 Agent 生成并执行测试，保存复现证据，交接缺陷，并验证修复。
 
-**当前版本：1.1.0，工程试用阶段。** 已在真实 GitHub JavaScript 仓库跑通测试、缺陷交接、修复和回归。当前支持 macOS 上明确选定的 `.js` / `.mjs` / `.cjs` 文件，不是任意仓库自动接入的通用测试平台。
+当前版本 **1.5.0，工程试用阶段**。支持明确授权的 JavaScript 模块与本地静态前端 Chrome 功能测试。测试在本地执行，云端提供生成与评分服务。
 
-[改动记录](CHANGELOG.md) · [真实仓库评估与完成度](docs/mvp/github-evaluation.md) · [配置说明](docs/mvp/configuration.md) · [文档索引](docs/README.md)
+2026-09-23 发布检查：**51 项 Agent 检查、36 项 API 代理检查通过**；真实 JavaScript 与浏览器样例分别完成 8 项和 6 项测试，检出的预置缺陷在配套修复版原测试回归中全部通过。当前成熟度与比赛限制见 [完整质量评估](docs/quality-review-2026-09-23.md)。
 
-## 工作流程
+[安装技能](docs/skill-installation.md) · [CLI](docs/cli.md) · [会话管理](docs/sessions.md) · [持续自动测试](docs/campaigns.md) · [评分架构设计](docs/architecture/scoring-selection-v2.md) · [NVIDIA 技术清单](docs/architecture/nvidia-stack.md)
+
+## 交互终端
+
+安装 CLI 后，在项目目录运行：
+
+```bash
+askjev-cli
+```
+
+进入带有 **askJEV** 标识的终端对话界面，可输入需求与已有 `task.json` 路径，或输入 `/run <task.json>` 直接执行原有测试流程。界面显示对话、测试进度、执行数量和报告路径；`/help` 查看命令，Esc 停止任务，Ctrl+D 退出。
+
+模型固定使用私密配置中的 `default_model`（缺省为 `flash-direct`），底部只显示操作提示和状态，不提供模型菜单、快捷键切换或 `--model` 参数。任务文件中的 `model` 不会覆盖该设置。`askjev-cli --project <目录> --config <私密配置>` 可指定工作目录与配置。每次启动是新对话，`/clear` 清空本次对话并保留测试证据。脚本和后台会话仍使用 `askjev`。[安装与命令说明](docs/cli.md)
+
+## 使用你的 ChatGPT Codex 安装
+
+**请使用你的 ChatGPT Codex 安装该技能。** 将独立安装包 `askjev-agent-skill-1.5.0.tar.gz` 交给具备本地文件和终端能力的编码 Agent：
+
+> 请安装我提供的 askjev-agent 技能包，阅读 SKILL.md 并运行 scripts/install.mjs，安装配套 CLI、运行库与内置 Skills，保留已有私密配置并验证连接。之后测试本项目时，由技能管理独立会话、调用 CLI、读取实际失败证据，修复后执行原测试回归。不要把密钥写进仓库。
+
+安装器校验随包携带的固定版本 CLI；技能通过自己的调用脚本使用匹配版本。普通聊天界面若没有本地执行能力，无法安装本机程序。Node.js、Chrome 和模型凭据不包含在包中，依赖下载需要网络。
+
+从本仓库根目录制作安装包：
+
+```bash
+npm ci --ignore-scripts
+npm run package:skill
+```
+
+包输出到 `artifacts/releases/`。解压后安装：
+
+```bash
+node askjev-agent/scripts/install.mjs
+node ~/.codex/skills/askjev-agent/scripts/askjev.mjs --version
+```
+
+支持 CODEX_HOME、自定义技能目录与安装目录，不覆盖无关技能、不修改 shell 配置。[完整安装说明](docs/skill-installation.md)
+
+## 连接模型与 DGX Spark
+
+以下命令使用已安装的 `askjev`；通过技能使用时，由技能的调用脚本执行同样参数。
+
+```bash
+askjev init
+# 填写 ~/.askjev-agent/config.json 中的服务地址与凭据引用
+askjev connect start
+askjev doctor --probe --model flash-direct
+askjev doctor --browser
+```
+
+生成服务与评分服务独立配置；直接可达的服务可省略 SSH 连接步骤。既有模型别名为 `flash-direct`、`glm`、`qwen-cloud`，其他环境按实际部署填写。配置样例均为占位值：[通用模型](config/agent.example.json)、[Spark 接入](config/spark.example.json)。
+
+默认数据目录为 `~/.askjev-agent`，支持 `ASKJEV_HOME`、`ASKJEV_CONFIG` 和 `--config`。密钥只通过环境变量或明确引用的私密文件读取。
+
+## 测试与修复闭环
 
 ```text
-用户 / coding agent → CLI → 原测试基线 → Pi 阅读需求与源码
-    → askJEV 云端评分 → Pi 生成测试 → 隔离执行 → 缺陷报告与交接包
-    → coding agent 修复独立副本 → 原测试回归 → 结构化反馈
+任务与需求 → 源码快照 → 原测试基线 → 场景生成 → askJEV 评分
+    → 按策略执行 → 断言与截图证据 → 编码 Agent 修复 → 原测试回归
 ```
-
-生成模型和评分后端独立配置。Pi 负责检查项、测试代码和结果分析；`askJEV` 负责评分协议、认证、校验与错误处理。业务代码不会由测试运行时自动修改。
-
-## 已验证的结果
-
-针对 MIT 许可的 [lukeed/klona](https://github.com/lukeed/klona)，固定提交 `e563341d88f433e74a9b4c3c0372d4ba55d2f79e`：
-
-| 验证项 | 结果 |
-| --- | --- |
-| 上游四种模式原测试 | 原版和修复版均为 137/137 通过 |
-| Pi 专项测试 | 发现 DataView 克隆丢失偏移和长度，影响两个实现位置 |
-| 缺陷证据 | 3 条失败记录，归为一类独立缺陷 |
-| 修复回归 | 16 组原 Pi 测试全部通过，测试摘要不变 |
-| 本项目基础设施测试 | 25/25 通过 |
-
-首次通用测试没有发现该问题，随后明确发起的边界专项测试才定位。评分模型给三个失败检查项都返回最高“满足”分，**目前不能根据高分跳过测试，也未证明评分能提高检出率**。
-
-可提交的摘要见 [验收数据](docs/evidence/klona-1.1.json)，方法和限制见[完整评估](docs/mvp/github-evaluation.md)。原始日志、快照和运行报告留在本机，不随仓库上传。
-
-## 安装与基础验证
-
-需要 macOS、系统自带的 `sandbox-exec`、Git 和 Node.js。包声明 Node.js ≥22.19；本次完整验收使用 macOS / Homebrew Node.js 26.8.1。其他 Node 安装布局尚需验证。Python 3 仅在使用附带 SSH 隧道脚本时需要。
 
 ```bash
-git clone https://github.com/appergb/askjev-pi-test-agent.git
-cd askjev-pi-test-agent
-npm ci --ignore-scripts
-npm test
+askjev run --request <task.json>
+askjev handoff --from <run-directory>
+askjev regress --from <run-directory> --project <fixed-checkout>
+askjev feedback --from <run-directory> --regression <regression-directory>
 ```
 
-`npm test` 使用本地测试夹具和明确标记的 Mock，不需要云端凭据。它验证工具运行机制，不替代真实模型联调。
+任务明确列出允许读取的源码、需求和预算。测试 Agent 生成测试，编码 Agent 修改业务实现。回归保留原测试字节，不复用旧源码评分。结果中的 `artifacts.directory` 指向证据目录；交接报告由调用方读取。
 
-## 连接模型
-
-首次使用可以复制脱敏样例：
+## 持续自动测试
 
 ```bash
-mkdir -p docs/private
-cp -n config/agent.example.json docs/private/mvp-config.local.json
-chmod 600 docs/private/mvp-config.local.json
+askjev campaign --request <task.json> --select all --scoring-failure all \
+  --rounds 3 --max-seconds 600 --max-model-turns 60
 ```
 
-已有本机私密配置时直接复用，不要用样例覆盖。编辑模型 ID、服务地址和评分地址，并通过环境变量 `PI_TEST_API_KEY` 注入生成模型凭据。样例中的域名、模型 ID 和回环端口仅作占位，不能直接连接现有服务。
+固定同一份源码快照，分轮生成与执行测试，把已测场景和未引用的需求交给下一轮；出现失败时自动用原测试复现。总时间、轮数和模型调用轮次有上限，连续没有新测试内容时提前停止。每轮结果、复现证据及汇总交接持续写入本地目录。
 
-也可以显式引用已有 Pi `auth.json` 的 API-key 条目。CLI 支持 `--config <private-config>` 或环境变量 `PI_TEST_CONFIG`，详见[配置说明](docs/mvp/configuration.md)。个人 Pi 全局 Skills、扩展和执行配置不会自动加载。
+需要离开前台时，用 `session campaign --id <id> --request <task.json> --rounds 3` 在后台运行，再用 `session inspect/logs/stop` 管理。每轮使用独立模型对话，避免把历史结果当作本轮证据。它不是无限循环，也没有崩溃后步骤续跑。[完整说明](docs/campaigns.md)
 
-如果评分服务需要 SSH 隧道，先在私密配置中补充 `ssh` 字段，再执行：
+## 独立会话与并行任务
 
 ```bash
-python3 scripts/cloud-tunnel.py start
-node src/cli.mjs doctor
+askjev session create --name frontend --count 2
+askjev session run --id <id> --request <task.json>
+askjev session inspect --id <id>
+askjev session logs --id <id>
+askjev session stop --id <id>
+askjev session clear --id <id>
+askjev session restart --id <id>
 ```
 
-已自行建立连接或直接使用回环服务时，只需执行 `doctor`。该命令检查评分就绪和执行环境；模型鉴权与工具调用由实际运行验证。
+同一会话保留模型历史，不同会话独立运行。同一会话禁止重叠任务。清空删除对话上下文，保留测试证据；重开会重新提交任务。后台提交成功不代表测试通过，需要等待实际结果。这是应用层生命周期管理，尚无 Docker 级系统隔离或资源配额。
 
-## 运行 demo 与真实项目
+## 评分筛选：当前能力与下一步
+
+**当前默认全测。评分是辅助信号，不是用户操作概率，也不是软件正确率。** 显式选测可用于预算实验：
 
 ```bash
-# 带两个预置缺陷的小 demo
-node src/cli.mjs run --request examples/retry-demo/task.json
-
-# 准备固定版本的真实上游源码，不覆盖已有 checkout
-node scripts/prepare-github-example.mjs
-
-# 常见行为、边界专项、full 模式分别测试
-node src/cli.mjs run --request examples/github-klona/task.json
-node src/cli.mjs run --request examples/github-klona/edge-task.json
-node src/cli.mjs run --request examples/github-klona/full-task.json
+askjev run --request examples/frontend-shop/task.json --select lowest --count 3
+askjev replay --from <run-directory> --select all
 ```
 
-示例默认选择配置别名 `flash-direct`。本机也验证过 `glm` 和 `qwen-cloud`，配置后可通过 `--model` 切换。任务文件明确列出允许读取的文件、需求来源、已有基线和预算；模型不会扫描整个仓库。
+也支持最高分前 N 项和分数区间；未选中项明确标为未测试。`replay` 比较冻结源码、分数与测试，不用于验证修复。
 
-运行进度写 stderr，stdout 只返回最终 JSON。发现确认缺陷时退出码为 **1**，表示检测完成且发现问题。每轮输出目录由返回对象的 `artifacts.directory` 给出。
+现有 JEV 读取下一答案标签的条件概率，尚未校准为缺陷概率。购物结算实验中，优惠码错误得到约 `0.00247` 的低分，免运费边界错误却得到 `1.0`；只测低分会漏检。后续复测只测一项也曾未检出预置缺陷。[实验记录](docs/evidence/frontend-1.3.json)
 
-## 交给 coding agent 修复
+1.5 已增加评分饱和、并列与未知项诊断，保存为 `score-quality.json`。诊断用于暴露问题，不会把分数变成可靠置信度。`--scoring-failure all` 允许评分服务失败后继续全量测试，缺失评分保持 null；只在 `--select all` 下启用，严格选测不会被暗中扩大。默认错误策略仍为 strict。
 
-```bash
-node src/cli.mjs handoff --from artifacts/<original-run>
-node src/cli.mjs regress --from artifacts/<original-run> --project <fixed-checkout>
-node src/cli.mjs feedback --from artifacts/<original-run> --regression artifacts/<regression-run>
-```
+**后续设计，尚未实现：**
 
-- `coding-handoff.json`：确认缺陷、源码和需求引用、Git/快照身份、Pi 测试路径及摘要、失败证据和回归参数。
-- `regress`：对新代码快照执行字节不变的原 Pi 测试，并重新运行配置的原测试基线。
-- `coding-feedback.json`：校验运行关联与测试摘要后记录每个缺陷的回归结果。
+- 小任务优先全测，避免评分成本超过省下的执行成本。
+- 引入需求边界、改动影响与历史回归的必测集合。
+- 使用风险、覆盖增益和分层探索共同选择，保留高分与未知项抽查。
+- 在现有饱和/并列诊断上增加上下文与模型分歧检查，并与混合选择器联动。
+- 建立根因级真值和多仓库评估，达到门槛后才引入学习排序与概率校准。
 
-结果由调用方读取，不会自动推送到任意 coding agent 会话。Codex Skill 位于 [skills/codex/pi-test](skills/codex/pi-test/SKILL.md)，项目内发现入口为 `.agents/skills/pi-test`。
+![评分与选测目标架构；虚线模块尚未上线](docs/architecture/scoring-selection-v2.svg)
 
-退出码：`0` 完成且无确认问题；`1` 完成且有确认问题；`2` 输入/配置无效；`3` 失败/受阻；`4` 部分完成或结论不完整；`5` 已取消。
+[完整架构设计](docs/architecture/scoring-selection-v2.md) · [下载 SVG](docs/architecture/scoring-selection-v2.svg)
 
-## 目录
+## NVIDIA CUDA 与模型推理调优
 
-| 路径 | 用途 |
-| --- | --- |
-| `src/` | Pi 运行时、评分、快照、基线、执行器、CLI 和反馈协议 |
-| `skills/pi/` | 评分、场景构思、测试编写、缺陷分析四个 Skills |
-| `skills/codex/` | coding agent 调用测试与修复回归的 Skill |
-| `config/` | 可提交的脱敏配置样例 |
-| `examples/` | demo、固定 GitHub 任务、修复补丁与上游许可 |
-| `tests/` | 不依赖真实模型的基础设施验证 |
-| `scripts/` | 仓库准备、连接和模型/评分评估辅助脚本 |
-| `docs/` | 需求、配置、验收、完成度和历史环境记录 |
-| `deploy/spark/` | 既有云端服务的部署与代理参考；普通使用无需运行 |
-| `artifacts/`、`.runtime/`、`docs/private/` | 本机产物、临时状态和私密配置，Git 忽略 |
+**JEV 是基于经过后训练的 Qwen3-4B 系列指令模型构建、面向测试场景适配的决策评分模型。** 它结合需求、源码与候选检查项输出评分信号，为测试优先级安排提供依据。
 
-## 当前边界
+针对 **NVIDIA DGX Spark / GB10**，JEV 与千问服务已完成部署适配和推理参数调优。
 
-- 明确选定的小型 JavaScript 模块；模型上下文上限 16 KB，快照上限 512 KB。
-- Pi 生成 node:test 测试；已有基线支持显式配置的 node:test 和 uvu。
-- macOS 执行配置限制网络、子进程、业务源文件写入和工作区外的数据读取，不能等同于任意敌意代码的通用沙箱。
-- 最低检查项数避免范围缩水，但不证明语义覆盖；多个失败用例仍需按根因去重。
-- MCP、其他语言/框架、大仓库、跨平台隔离和可靠评分排序仍待完善。
+| 路径 | 已使用的技术 | 项目工作 |
+| --- | --- | --- |
+| JEV 评分 | Qwen3-4B 指令后训练版本、PyTorch CUDA、BF16、SDPA | GPU 部署、版本固定、评分协议与测试联调 |
+| 千问生成 | 混合 NVFP4/FP8 checkpoint、SGLang、FlashInfer | 单机服务接入、工具调用及推理参数适配 |
+| 生成性能 | CUDA Graphs、FP8 KV cache、Radix/LFU 前缀缓存、模型内置 MTP | 图捕获与缓存路径验收、交互延迟和吞吐取舍 |
+| 单机资源 | 内存比例、分块预填充、Mamba 状态与调度配置 | 为评分和生成服务共存保留资源 |
 
-klona 补丁及相关材料遵循其附带的 [MIT 许可](examples/github-klona/LICENSE.upstream)。当前协作与提交规则见 [项目说明](docs/project/README.md)。
+JEV 当前使用 `Qwen3-4B-Instruct-2507`，其基础模型经历预训练与后训练，详见 [模型说明](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)。评分服务已核实采用 CUDA/BF16；标签概率尚未校准为缺陷概率。千问生成服务采用混合 NVFP4/FP8 权重，结合缓存与推测解码优化推理效率。
+
+CUDA Graphs 用于减少重复 GPU 工作提交开销，原理见 [NVIDIA 文档](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html)。它和缓存优化提升的是推理效率，不保证评分判断正确。Flash/GLM 外部 API 与本机 Chrome 测试不计入 Spark CUDA 加速的证明。
+
+部署参数与历史性能观测见 [技术清单](docs/architecture/nvidia-stack.md)。测试框架通过现有私密连接调用服务；云端部署参数单独管理。
+
+## 验证与当前边界
+
+- **1.5：47 项检查通过。** 真实后台任务计划最多五轮，在第三轮因连续没有新测试内容自动停止；三轮共执行 18 项、复现执行 18 项。六条失败记录对应两个已复核的预置缺陷；修复版原测试通过。新增评分异常显式降级与质量诊断。[运行证据](docs/evidence/campaign-1.5.json)
+- **1.4：39 项基础设施检查通过**；独立技能自安装、两个真实后台会话、历史上下文恢复与清空均已验证。[记录](docs/evidence/skill-session-1.4.json)
+- **前端样例：** 全量六项发现两个预置缺陷，修复后原测试 6/6 通过；这不是外部工程的盲测结果。
+- **真实仓库 klona：** 找到 DataView 克隆的一类缺陷，修复后 16 组原生成测试通过；原版和修复版上游测试均为 137/137。[记录](docs/evidence/klona-1.1.json)
+
+当前支持选定 JavaScript 模块和本地静态前端；模型可见输入 16 KB、快照 512 KB。评分服务 4096-token 上限与生成服务的长上下文能力分开管理。尚不支持生产网站、支付/登录流程、后端 API、视觉差异测试或执行步骤断点恢复。新架构中的 hybrid、独立复核、根因自动去重与校准训练仍是待实现能力。持续任务已有失败重现，尚不能独立证明断言符合业务需求。
+
+业务命令输出 JSON；退出码为 0 成功无确认问题、1 完成且有问题、2 输入/配置无效、3 失败、4 不完整、5 取消。局部通过不等于软件没有 bug。
+
+[改动记录](CHANGELOG.md) · [后续能力路线](docs/diagnostic-roadmap.md) · [组件来源说明](THIRD_PARTY_NOTICES.md)

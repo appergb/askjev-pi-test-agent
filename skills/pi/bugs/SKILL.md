@@ -1,6 +1,6 @@
 ---
 name: bugs
-description: Classify real test outcomes and finish a Pi test report with requirement quotes and reproducible failure evidence.
+description: Classify real test outcomes and finish a Agent test report with requirement quotes and reproducible failure evidence.
 ---
 
 Use after runTests. Read each actual result and distinguish assertion failure, invalid generated test, environment failure and pass. A score alone is never a finding.

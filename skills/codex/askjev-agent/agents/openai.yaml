@@ -1,0 +1,4 @@
+interface:
+  display_name: "askJEV Agent"
+  short_description: "安装测试 CLI，管理独立测试会话，并完成缺陷交接与原测试回归"
+  default_prompt: "使用 $askjev-agent 安装测试工具，创建独立会话，测试当前项目并交接可复现缺陷。"

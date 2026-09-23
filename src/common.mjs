@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-export const VERSION = '1.1.0';
+export const VERSION = '1.5.0';
 export const isJavaScript = (file) => /\.(?:mjs|cjs|js)$/.test(file);
 export const ROOT = path.resolve(import.meta.dirname, '..');
 export const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
@@ -26,6 +26,13 @@ export async function plainFile(root, name) {
   check((await fs.stat(current)).isFile(), 'Expected regular file');
   return current;
 }
+export function validateSelection(policy = { mode: 'all' }) {
+  check(policy && ['all', 'lowest', 'highest', 'range'].includes(policy.mode), 'Invalid selection mode');
+  if (['lowest', 'highest'].includes(policy.mode)) check(Number.isInteger(policy.count) && policy.count >= 1 && policy.count <= 12, 'Selection count must be 1..12');
+  if (policy.mode === 'range') check(Number.isFinite(policy.min) && Number.isFinite(policy.max) && 0 <= policy.min && policy.min <= policy.max && policy.max <= 1, 'Selection range must be within 0..1');
+  return policy;
+}
+
 export function validateTask(t) {
   check(t?.schema_version === '1.0', 'Expected task schema_version 1.0');
   check(typeof t.project === 'string' && typeof t.objective === 'string' && t.objective.length > 0 && t.objective.length <= 4000, 'Invalid task project/objective');
@@ -33,7 +40,17 @@ export function validateTask(t) {
   t.files.forEach(relativeFile);
   check(t.files.includes(t.requirement_file), 'Requirement file must be included');
   check(t.files.some(isJavaScript), 'A JavaScript source file is required');
-  check(!t.files.some((f) => f.startsWith('tests/')), 'tests/ is reserved for Pi generated tests; use baseline.files for existing tests');
+  check(!t.files.some((f) => f.startsWith('tests/')), 'tests/ is reserved for Agent generated tests; use baseline.files for existing tests');
+  validateSelection(t.selection);
+  if (t.scoring_failure !== undefined) {
+    check(['strict', 'all'].includes(t.scoring_failure), 'Invalid scoring failure policy');
+    check(t.scoring_failure !== 'all' || (t.selection?.mode ?? 'all') === 'all', 'Scoring fallback requires all selection; explicit subsets cannot be expanded');
+  }
+  if (t.execution) {
+    check(t.execution.type === 'browser', 'Unsupported execution type');
+    check(Array.isArray(t.execution.assets) && t.execution.assets.length > 0 && t.execution.assets.every((f) => t.files.includes(f) && /\.(html|js|mjs|css|json)$/.test(f)), 'Browser assets must be approved source files');
+    check(t.execution.assets.includes(t.execution.entry) && t.execution.entry.endsWith('.html'), 'Browser entry must be an approved HTML asset');
+  }
   if (t.baseline) {
     check(['uvu', 'node-test'].includes(t.baseline.framework), 'Unsupported baseline framework');
     check(Array.isArray(t.baseline.files) && t.baseline.files.length <= 200, 'Invalid baseline files');

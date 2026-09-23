@@ -1,6 +1,6 @@
 ---
 name: ask-jev
-description: Prepare source-grounded inspection items and call askJEV in the Pi testing runtime to obtain experimental test-priority signals.
+description: Prepare source-grounded inspection items and call askJEV in the Agent testing runtime to obtain experimental test-priority signals.
 ---
 
 Use after readProject and before writing tests. Input is the task objective, exact source text and requirements. Output is a prepared summary and inspection items passed to the actual `askJEV` tool.
@@ -9,6 +9,6 @@ Each item needs a unique case_id, concrete scenario, expected behavior, a requir
 
 Call askJEV once with the entire prepared batch. The runtime attaches approved source text and snapshot IDs. It does not do your semantic analysis. Do not invent endpoint URLs, credentials, backend results or scores.
 
-The fixed profile compares supported, violated and unknown. The supported candidate's conditional probability is an uncalibrated ordering signal. It is not a measured failure rate. Unknown or invalid responses have no numerical score. Use the tool's returned priority order; baseline items remain mandatory. In MVP all prepared items are tested even if they score highly. If scoring fails, report the error; do not fabricate a zero or quietly substitute your own scores.
+The fixed profile compares supported, violated and unknown. The supported candidate's conditional probability is an uncalibrated ordering signal. It is not a measured failure rate. Unknown or invalid responses have no numerical score. Use the tool's selection.selected_ids as the complete execution scope. Default all mode keeps baseline candidates first; an explicit lowest/highest/range policy can exclude them. Scores tied at the same value have no risk distinction. Save all candidate plans for reproducible comparisons, but only selected cases execute. Excluded cases stay untested. If scoring fails, report the error; do not fabricate a zero or quietly substitute your own scores.
 
 Example: for an idempotency requirement, prepare a scenario with two identical create calls and an expected single stored record. Quote the idempotency requirement and reference the source file. A low supported score motivates testing; only the actual test can establish failure.

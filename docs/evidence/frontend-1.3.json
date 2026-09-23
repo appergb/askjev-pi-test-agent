@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0",
+  "version": "1.3.0",
+  "evaluation_date": "2026-09-22",
+  "fixture": "Local static storefront; two deliberately seeded defects; not a blind external benchmark.",
+  "test_author": "Generation Agent using flash-direct; executable browser plans were not authored by Codex.",
+  "scoring_backend_mode": "real",
+  "source_snapshot_id": "2273e8fe27744f43e3fc1f39817418e657ae42df6bc24b14ac57de1444988d00",
+  "scores": [
+    {
+      "case_id": "case-01-qty1-ship",
+      "score": 1,
+      "status": "scored"
+    },
+    {
+      "case_id": "case-02-qty3-ship",
+      "score": 1,
+      "status": "scored"
+    },
+    {
+      "case_id": "case-03-qty5-freeship",
+      "score": 1,
+      "status": "scored"
+    },
+    {
+      "case_id": "case-04-qty6-ship",
+      "score": 1,
+      "status": "scored"
+    },
+    {
+      "case_id": "case-05-qty2-save10",
+      "score": 0.00247262348420918,
+      "status": "scored"
+    },
+    {
+      "case_id": "case-06-qty1-pickup",
+      "score": 1,
+      "status": "scored"
+    }
+  ],
+  "groups": [
+    {
+      "variant": "lowest",
+      "run_id": "run-2026-09-22T01-19-13-175Z-3512ae",
+      "total_duration_ms": 21095.198042,
+      "browser_execution_ms": 1860.0,
+      "selected_ids": [
+        "case-05-qty2-save10",
+        "case-01-qty1-ship",
+        "case-02-qty3-ship"
+      ],
+      "statistics": {
+        "selected": 3,
+        "skipped": 3,
+        "planned": 6,
+        "scored": 6,
+        "executed_cases": 3,
+        "passed_cases": 2,
+        "failed_cases": 1,
+        "executed_tests": 3,
+        "confirmed_findings": 1,
+        "model_turns": 7,
+        "test_attempts": 3
+      },
+      "failed_cases": [
+        {
+          "case_id": "case-05-qty2-save10",
+          "classification": "assertion_failure",
+          "actual_evidence": "ERR_ASSERTION #discount: expected \"4.00\", actual \"2.00\""
+        }
+      ]
+    },
+    {
+      "variant": "lowest1",
+      "run_id": "replay-f491ca60-c71b-4483-a1be-0a225f1f90ab",
+      "total_duration_ms": 957.0089169999999,
+      "browser_execution_ms": 949.09,
+      "selected_ids": [
+        "case-05-qty2-save10"
+      ],
+      "statistics": {
+        "planned": 6,
+        "selected": 1,
+        "skipped": 5,
+        "executed_cases": 1,
+        "passed_cases": 0,
+        "failed_cases": 1,
+        "assertion_failures": 1
+      },
+      "failed_cases": [
+        {
+          "case_id": "case-05-qty2-save10",
+          "classification": "assertion_failure",
+          "actual_evidence": "ERR_ASSERTION #discount: expected \"4.00\", actual \"2.00\""
+        }
+      ]
+    },
+    {
+      "variant": "highest",
+      "run_id": "replay-7ace1dda-e5ab-4cb9-a5b7-ed33ef759ac1",
+      "total_duration_ms": 2168.065708,
+      "browser_execution_ms": 2157.06,
+      "selected_ids": [
+        "case-01-qty1-ship",
+        "case-02-qty3-ship",
+        "case-03-qty5-freeship"
+      ],
+      "statistics": {
+        "planned": 6,
+        "selected": 3,
+        "skipped": 3,
+        "executed_cases": 3,
+        "passed_cases": 2,
+        "failed_cases": 1,
+        "assertion_failures": 1
+      },
+      "failed_cases": [
+        {
+          "case_id": "case-03-qty5-freeship",
+          "classification": "assertion_failure",
+          "actual_evidence": "ERR_ASSERTION #shipping: expected \"0.00\", actual \"5.00\""
+        }
+      ]
+    },
+    {
+      "variant": "all",
+      "run_id": "replay-d24c1fce-7f3c-4680-a051-097326dd4ff7",
+      "total_duration_ms": 3904.180125,
+      "browser_execution_ms": 3895.76,
+      "selected_ids": [
+        "case-05-qty2-save10",
+        "case-01-qty1-ship",
+        "case-02-qty3-ship",
+        "case-03-qty5-freeship",
+        "case-04-qty6-ship",
+        "case-06-qty1-pickup"
+      ],
+      "statistics": {
+        "planned": 6,
+        "selected": 6,
+        "skipped": 0,
+        "executed_cases": 6,
+        "passed_cases": 4,
+        "failed_cases": 2,
+        "assertion_failures": 2
+      },
+      "failed_cases": [
+        {
+          "case_id": "case-05-qty2-save10",
+          "classification": "assertion_failure",
+          "actual_evidence": "ERR_ASSERTION #discount: expected \"4.00\", actual \"2.00\""
+        },
+        {
+          "case_id": "case-03-qty5-freeship",
+          "classification": "assertion_failure",
+          "actual_evidence": "ERR_ASSERTION #shipping: expected \"0.00\", actual \"5.00\""
+        }
+      ]
+    },
+    {
+      "variant": "fixed",
+      "run_id": "regression-23e10ea5-46b7-4ae7-9c69-27c8d110b283",
+      "total_duration_ms": null,
+      "browser_execution_ms": 5286.53,
+      "selected_ids": null,
+      "statistics": {
+        "executed_cases": 6,
+        "passed_cases": 6,
+        "failed_cases": 0
+      },
+      "failed_cases": []
+    }
+  ],
+  "first_failure_evidence_ms": 12032.34,
+  "first_run_end_to_end_ms": 21095.2,
+  "infrastructure_tests": {
+    "passed": 37,
+    "total": 37
+  },
+  "feedback": "regression_passed",
+  "conclusion": "Numeric selection works. Lowest-three finds the coupon defect but misses the free-shipping boundary defect scored 1.0. All six detect both seeded defects. Scores are not user-action probabilities or calibrated bug probabilities.",
+  "timing_caveat": "Replay timings exclude generation, scoring and model analysis. Browser totals include launching a fresh Chrome instance per case. One trial per group does not establish stable performance.",
+  "comparison_caveat": "Five cases tied at 1.0; high-score membership depends on deterministic case_id ordering. Replay failures were checked against the acceptance contract and seeded-defect inventory; replay itself does not auto-confirm defects."
+}

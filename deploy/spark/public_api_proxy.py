@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import hmac
 import json
+import math
 import os
 import stat
 import time
@@ -19,6 +20,7 @@ from urllib.parse import urlsplit
 import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from starlette.types import Receive, Scope, Send
 
 ALLOWED_ROUTES: dict[str, frozenset[str]] = {
     "/v1/models": frozenset({"GET"}),
@@ -74,6 +76,7 @@ class Settings:
     user_concurrency: int = 7
     user_queue_size: int = 64
     upstream_timeout_seconds: float = 900.0
+    maintenance_file: Path | None = None
 
     @classmethod
     def from_environment(cls) -> Settings:
@@ -109,6 +112,11 @@ class Settings:
             upstream_timeout_seconds=float(
                 os.getenv("AGENT_UPSTREAM_TIMEOUT_SECONDS", "900")
             ),
+            maintenance_file=(
+                Path(os.environ["AGENT_MAINTENANCE_FILE"])
+                if os.getenv("AGENT_MAINTENANCE_FILE")
+                else None
+            ),
         )
 
     def validate(self) -> None:
@@ -141,6 +149,30 @@ def _read_private_key(variable_name: str) -> str:
     if len(api_key) < 32:
         raise RuntimeError("API key must contain at least 32 characters")
     return api_key
+
+
+def _maintenance_active(path: Path) -> bool:
+    """Read an operator-owned deadline; an expired gate reopens automatically."""
+    try:
+        expires_at = float(json.loads(path.read_text(encoding="utf-8"))["expires_at"])
+    except FileNotFoundError:
+        return False
+    except (OSError, ValueError, TypeError, KeyError):
+        return True
+    return not math.isfinite(expires_at) or expires_at > time.time()
+
+
+async def _maintenance_response(settings: Settings) -> JSONResponse | None:
+    """Check the local gate without blocking the request event loop."""
+    if settings.maintenance_file is not None and await asyncio.to_thread(
+        _maintenance_active, settings.maintenance_file
+    ):
+        return JSONResponse(
+            {"error": "service temporarily under maintenance"},
+            status_code=503,
+            headers={"Retry-After": "30", "Cache-Control": "no-store"},
+        )
+    return None
 
 
 class SlidingWindowRateLimiter:
@@ -185,6 +217,38 @@ class QueueLease:
         self._gate.release(self._token)
 
 
+class LeasedStreamingResponse(StreamingResponse):
+    """Own the upstream connection and queue slot throughout ASGI response delivery."""
+
+    def __init__(
+        self, response: httpx.Response, lease: QueueLease, tier: ApiTier
+    ) -> None:
+        self._upstream = response
+        self._lease = lease
+        super().__init__(
+            self._body(),
+            status_code=response.status_code,
+            headers=_response_headers(response, tier, lease.wait_ms),
+        )
+
+    async def _body(self) -> AsyncIterator[bytes]:
+        if self._upstream.is_stream_consumed:
+            yield self._upstream.content
+        else:
+            async for chunk in self._upstream.aiter_raw():
+                yield chunk
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """Release the slot even if cancellation precedes iteration or close fails."""
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            try:
+                await self._upstream.aclose()
+            finally:
+                await self._lease.release()
+
+
 class FifoGate:
     """Bounded FIFO admission queue with a fixed number of execution slots."""
 
@@ -196,21 +260,20 @@ class FifoGate:
             self._tokens.put_nowait(object())
         self._max_pending = max_pending
         self._pending = 0
-        self._lock = asyncio.Lock()
 
     async def acquire(self) -> QueueLease:
         """Wait in FIFO order for a slot or reject when the waiting queue is full."""
-        async with self._lock:
-            if self._tokens.empty() and self._pending >= self._max_pending:
-                raise QueueFullError("request queue is full")
-            self._pending += 1
+        # These counters belong to one event loop. Keep updates synchronous so
+        # cancellation cannot interrupt bookkeeping after a token was acquired.
+        if self._tokens.empty() and self._pending >= self._max_pending:
+            raise QueueFullError("request queue is full")
+        self._pending += 1
 
         started = time.monotonic()
         try:
             token = await self._tokens.get()
         finally:
-            async with self._lock:
-                self._pending -= 1
+            self._pending -= 1
         return QueueLease(self, token, (time.monotonic() - started) * 1000)
 
     def release(self, token: object) -> None:
@@ -353,6 +416,9 @@ def create_app(
                 status_code=401,
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        maintenance = await _maintenance_response(settings)
+        if maintenance is not None:
+            return maintenance
         if (
             tier is ApiTier.USER
             and not await request.app.state.user_rate_limiter.allow(_client_id(request))
@@ -373,9 +439,12 @@ def create_app(
                     {"error": "invalid content length"}, status_code=400
                 )
 
-        body = await request.body()
-        if len(body) > settings.max_body_bytes:
-            return JSONResponse({"error": "request too large"}, status_code=413)
+        chunks = bytearray()
+        async for chunk in request.stream():
+            if len(chunks) + len(chunk) > settings.max_body_bytes:
+                return JSONResponse({"error": "request too large"}, status_code=413)
+            chunks.extend(chunk)
+        body = bytes(chunks)
         if request.method == "POST":
             try:
                 body = _prepare_body(body, settings, tier)
@@ -396,19 +465,24 @@ def create_app(
                 headers={"Retry-After": "5", "X-API-Tier": tier.value},
             )
 
-        request_headers = {
-            name: value
-            for name, value in request.headers.items()
-            if name.lower() in FORWARDED_REQUEST_HEADERS
-        }
-        client: httpx.AsyncClient = request.app.state.upstream_client
-        upstream_request = client.build_request(
-            request.method,
-            f"{settings.upstream_base}{path}",
-            headers=request_headers,
-            content=body,
-        )
         try:
+            # Recheck after queue wait; cancellation here must return the slot too.
+            maintenance = await _maintenance_response(settings)
+            if maintenance is not None:
+                await lease.release()
+                return maintenance
+            request_headers = {
+                name: value
+                for name, value in request.headers.items()
+                if name.lower() in FORWARDED_REQUEST_HEADERS
+            }
+            client: httpx.AsyncClient = request.app.state.upstream_client
+            upstream_request = client.build_request(
+                request.method,
+                f"{settings.upstream_base}{path}",
+                headers=request_headers,
+                content=body,
+            )
             upstream_response = await client.send(upstream_request, stream=True)
         except httpx.TimeoutException:
             await lease.release()
@@ -416,23 +490,11 @@ def create_app(
         except httpx.RequestError:
             await lease.release()
             return JSONResponse({"error": "upstream unavailable"}, status_code=502)
+        except BaseException:
+            await lease.release()
+            raise
 
-        async def stream_body() -> AsyncIterator[bytes]:
-            try:
-                if upstream_response.is_stream_consumed:
-                    yield upstream_response.content
-                else:
-                    async for chunk in upstream_response.aiter_raw():
-                        yield chunk
-            finally:
-                await upstream_response.aclose()
-                await lease.release()
-
-        return StreamingResponse(
-            stream_body(),
-            status_code=upstream_response.status_code,
-            headers=_response_headers(upstream_response, tier, lease.wait_ms),
-        )
+        return LeasedStreamingResponse(upstream_response, lease, tier)
 
     return app
 

@@ -1,29 +1,66 @@
 {
-  "name": "@403-forbidden/pi-test-agent",
-  "version": "1.1.0",
+  "name": "@403-forbidden/askjev-agent",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22.19.0"
   },
   "bin": {
+    "askjev": "src/cli.mjs",
+    "askjev-cli": "src/terminal.mjs",
     "pi-test-agent": "src/cli.mjs"
   },
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "demo": "node src/cli.mjs run --request examples/retry-demo/task.json"
+    "demo": "node src/cli.mjs run --request examples/retry-demo/task.json",
+    "package:skill": "node scripts/build-skill-package.mjs"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "0.85.1",
     "@earendil-works/pi-coding-agent": "0.85.1",
+    "@earendil-works/pi-tui": "0.85.1",
     "jiti": "2.7.0",
+    "playwright-core": "1.63.0",
     "typebox": "1.3.7",
     "uvu": "0.5.2"
   },
-  "description": "Pi testing runtime with askJEV scoring, reproducible evidence and coding-agent regression feedback",
+  "description": "Optimized Agent framework for evidence-based testing, cloud inference and coding-agent regression",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/appergb/askjev-pi-test-agent.git"
   },
-  "homepage": "https://github.com/appergb/askjev-pi-test-agent#readme"
+  "homepage": "https://github.com/appergb/askjev-pi-test-agent#readme",
+  "files": [
+    "src/",
+    "skills/",
+    "config/agent.example.json",
+    "config/spark.example.json",
+    "scripts/cloud-tunnel.py",
+    "examples/retry-demo/",
+    "examples/retry-demo-fixed/",
+    "docs/cli.md",
+    "docs/framework.md",
+    "docs/diagnostic-roadmap.md",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md",
+    "CHANGELOG.md",
+    "docs/mvp/configuration.md",
+    "docs/evidence/klona-1.1.json",
+    "npm-shrinkwrap.json",
+    "docs/evidence/cli-1.2.json",
+    "examples/frontend-shop/",
+    "docs/frontend-testing.md",
+    "examples/frontend-shop-fixed/",
+    "docs/evidence/frontend-1.3.json",
+    "docs/skill-installation.md",
+    "docs/sessions.md",
+    "docs/evidence/skill-session-1.4.json",
+    "docs/architecture/",
+    "docs/evidence/scoring-protocol-audit-2026-09-22.json",
+    "docs/campaigns.md",
+    "docs/evidence/campaign-1.5.json",
+    "docs/quality-review-2026-09-23.md",
+    "docs/evidence/quality-review-2026-09-23.json"
+  ]
 }

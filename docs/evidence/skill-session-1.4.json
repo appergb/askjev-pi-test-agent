@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "version": "1.4.0",
+  "evaluation_date": "2026-09-22",
+  "infrastructure_tests": {
+    "passed": 39,
+    "total": 39
+  },
+  "installer": {
+    "standalone_archive": true,
+    "runtime_installed": true,
+    "skill_registered": true,
+    "idempotent_reinstall": true,
+    "global_cli_required": false,
+    "known_secret_scan_passed": true
+  },
+  "real_parallel_sessions": [
+    {
+      "name": "validation-front",
+      "session_id": "s-948b23ab0b683619",
+      "status": "completed",
+      "duration_ms": 13144,
+      "statistics": {
+        "selected": 1,
+        "skipped": 5,
+        "planned": 6,
+        "scored": 6,
+        "executed_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "executed_tests": 1,
+        "confirmed_findings": 0,
+        "model_turns": 6,
+        "test_attempts": 1
+      },
+      "started_at": "2026-09-22T01:41:25.847Z",
+      "finished_at": "2026-09-22T01:41:39.524Z"
+    },
+    {
+      "name": "validation-module",
+      "session_id": "s-438978e8b382fa20",
+      "status": "completed",
+      "duration_ms": 15200,
+      "statistics": {
+        "selected": 4,
+        "skipped": 0,
+        "planned": 4,
+        "scored": 4,
+        "executed_cases": 4,
+        "passed_cases": 2,
+        "failed_cases": 2,
+        "executed_tests": 4,
+        "confirmed_findings": 2,
+        "model_turns": 6,
+        "test_attempts": 4
+      },
+      "started_at": "2026-09-22T01:41:26.998Z",
+      "finished_at": "2026-09-22T01:41:42.784Z"
+    }
+  ],
+  "continued_session": {
+    "session_id": "s-948b23ab0b683619",
+    "generation": 1,
+    "resumed": true,
+    "duration_ms": 18910,
+    "statistics": {
+      "selected": 6,
+      "skipped": 0,
+      "planned": 6,
+      "scored": 6,
+      "executed_cases": 6,
+      "passed_cases": 4,
+      "failed_cases": 2,
+      "executed_tests": 6,
+      "confirmed_findings": 2,
+      "model_turns": 6,
+      "test_attempts": 6
+    }
+  },
+  "clear": {
+    "generation_after_clear": 2,
+    "previous_evidence_retained": true,
+    "other_session_context_retained": true
+  },
+  "mock_verified_lifecycle": [
+    "parallel workers",
+    "same-session overlap rejected",
+    "running clear rejected",
+    "persistent context resumed",
+    "clear removes historical model context",
+    "cancellation",
+    "restart with new generation",
+    "project binding",
+    "invalid IDs rejected"
+  ],
+  "limits": [
+    "Lifecycle is not Docker/OS isolation or process checkpointing.",
+    "The initial frontend lowest-one run missed both seeded bugs; continued all-case run found both. Score-only selection remains unreliable.",
+    "Automatic skill selection is host-dependent; installer and wrapper execution were verified directly.",
+    "No cloud services were installed or modified."
+  ]
+}

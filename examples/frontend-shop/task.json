@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "project": "examples/frontend-shop",
+  "files": ["index.html", "app.js", "styles.css", "requirements.md"],
+  "requirement_file": "requirements.md",
+  "objective": "Test the storefront UI against its six acceptance scenarios. Prepare exactly six cases, one for each specified quantity/delivery/coupon combination; verify the rendered amounts. Use the requirement text for expectations and the HTML for selectors. Do not add scenarios outside this contract.",
+  "execution": {"type": "browser", "entry": "index.html", "assets": ["index.html", "app.js", "styles.css"]},
+  "selection": {"mode": "lowest", "count": 3},
+  "budget": {"max_duration_seconds": 300, "min_cases": 6, "max_cases": 6, "max_model_turns": 18, "max_test_attempts": 2},
+  "model": "flash-direct"
+}

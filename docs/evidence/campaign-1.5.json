@@ -1,0 +1,242 @@
+{
+  "schema_version": "1.0",
+  "version": "1.5.0",
+  "date": "2026-09-22",
+  "test_environment": {
+    "generation": "flash-direct, real cloud API",
+    "scoring": "existing JEV, real cloud API",
+    "execution": "local macOS Chrome",
+    "fixture": "examples/frontend-shop",
+    "fixed_fixture": "examples/frontend-shop-fixed"
+  },
+  "infrastructure_tests": {
+    "passed": 47,
+    "failed": 0
+  },
+  "background_campaign": {
+    "session_id": "s-e428397da56ca99e",
+    "run_id": "campaign-8c6c7ee5-9c3f-4fe1-8640-ab0f03514989",
+    "run_status": "completed",
+    "assessment": "confirmed_findings",
+    "requested_rounds": 5,
+    "completed_rounds": 3,
+    "stop_reason": "no_new_scenarios",
+    "duration_ms": 83299.591958,
+    "statistics": {
+      "model_turns": 18,
+      "executed_cases": 18,
+      "reproduction_cases": 18,
+      "finding_records": 6,
+      "reproduced_assertions": 6
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "run_id": "run-2026-09-22T08-52-30-675Z-6ffabc",
+        "run_status": "completed",
+        "new_test_fingerprints": 6,
+        "statistics": {
+          "selected": 6,
+          "skipped": 0,
+          "planned": 6,
+          "scored": 6,
+          "executed_cases": 6,
+          "passed_cases": 4,
+          "failed_cases": 2,
+          "executed_tests": 6,
+          "confirmed_findings": 2,
+          "model_turns": 6,
+          "test_attempts": 6
+        },
+        "scoring": {
+          "backend_mode": "real",
+          "quality": {
+            "status": "degraded",
+            "reasons": [
+              "score_ties",
+              "score_saturation"
+            ],
+            "total": 6,
+            "numeric": 6,
+            "distinct_scores_6dp": 1,
+            "largest_tie": 6,
+            "calibrated": false,
+            "note": "Diagnostics only; absence of warnings does not establish reliable ranking."
+          }
+        },
+        "findings": [
+          {
+            "case_id": "acc-q5-ship-none",
+            "category": "confirmed_product_defect",
+            "title": "Free-shipping threshold uses strict > 100 instead of >= 100, so subtotal exactly 100.00 is charged 5.00 shipping",
+            "requirement_quote": "With quantity 5, delivery ship, and no coupon, subtotal is 100.00, shipping is 0.00, and total is 100.00: free shipping applies when the pre-discount subtotal is at least 100.00."
+          },
+          {
+            "case_id": "acc-q2-ship-save10",
+            "category": "confirmed_product_defect",
+            "title": "SAVE10 coupon applies 5% instead of the required 10%, rendering discount 2.00 instead of 4.00",
+            "requirement_quote": "With quantity 2, delivery ship, and coupon SAVE10, subtotal is 40.00, discount is 4.00 (10% of subtotal), shipping is 5.00, and total is 41.00. Coupon discount never applies to shipping."
+          }
+        ],
+        "reproduced_assertions": 2
+      },
+      {
+        "round": 2,
+        "run_id": "run-2026-09-22T08-52-54-767Z-b4ae9c",
+        "run_status": "completed",
+        "new_test_fingerprints": 0,
+        "statistics": {
+          "selected": 6,
+          "skipped": 0,
+          "planned": 6,
+          "scored": 6,
+          "executed_cases": 6,
+          "passed_cases": 4,
+          "failed_cases": 2,
+          "executed_tests": 6,
+          "confirmed_findings": 2,
+          "model_turns": 6,
+          "test_attempts": 6
+        },
+        "scoring": {
+          "backend_mode": "real",
+          "quality": {
+            "status": "degraded",
+            "reasons": [
+              "score_ties",
+              "score_saturation"
+            ],
+            "total": 6,
+            "numeric": 6,
+            "distinct_scores_6dp": 2,
+            "largest_tie": 5,
+            "calibrated": false,
+            "note": "Diagnostics only; absence of warnings does not establish reliable ranking."
+          }
+        },
+        "findings": [
+          {
+            "case_id": "case-q2-ship-save10",
+            "category": "confirmed_product_defect",
+            "title": "SAVE10 coupon applies 5% instead of the required 10% discount",
+            "requirement_quote": "With quantity 2, delivery ship, and coupon SAVE10, subtotal is 40.00, discount is 4.00 (10% of subtotal), shipping is 5.00, and total is 41.00. Coupon discount never applies to shipping."
+          },
+          {
+            "case_id": "case-q5-ship-nocoupon",
+            "category": "confirmed_product_defect",
+            "title": "Free shipping not applied at exactly 100.00 pre-discount subtotal",
+            "requirement_quote": "With quantity 5, delivery ship, and no coupon, subtotal is 100.00, shipping is 0.00, and total is 100.00: free shipping applies when the pre-discount subtotal is at least 100.00."
+          }
+        ],
+        "reproduced_assertions": 2
+      },
+      {
+        "round": 3,
+        "run_id": "run-2026-09-22T08-53-23-507Z-d640b3",
+        "run_status": "completed",
+        "new_test_fingerprints": 0,
+        "statistics": {
+          "selected": 6,
+          "skipped": 0,
+          "planned": 6,
+          "scored": 6,
+          "executed_cases": 6,
+          "passed_cases": 4,
+          "failed_cases": 2,
+          "executed_tests": 6,
+          "confirmed_findings": 2,
+          "model_turns": 6,
+          "test_attempts": 6
+        },
+        "scoring": {
+          "backend_mode": "real",
+          "quality": {
+            "status": "degraded",
+            "reasons": [
+              "score_ties",
+              "score_saturation"
+            ],
+            "total": 6,
+            "numeric": 6,
+            "distinct_scores_6dp": 1,
+            "largest_tie": 6,
+            "calibrated": false,
+            "note": "Diagnostics only; absence of warnings does not establish reliable ranking."
+          }
+        },
+        "findings": [
+          {
+            "case_id": "acc-q5-ship-nocoupon",
+            "category": "confirmed_product_defect",
+            "title": "Free shipping not applied at pre-discount subtotal of exactly 100.00",
+            "requirement_quote": "With quantity 5, delivery ship, and no coupon, subtotal is 100.00, shipping is 0.00, and total is 100.00: free shipping applies when the pre-discount subtotal is at least 100.00."
+          },
+          {
+            "case_id": "acc-q2-ship-save10",
+            "category": "confirmed_product_defect",
+            "title": "SAVE10 coupon applies 5% instead of the required 10% discount",
+            "requirement_quote": "With quantity 2, delivery ship, and coupon SAVE10, subtotal is 40.00, discount is 4.00 (10% of subtotal), shipping is 5.00, and total is 41.00. Coupon discount never applies to shipping."
+          }
+        ],
+        "reproduced_assertions": 2
+      }
+    ]
+  },
+  "regressions": [
+    {
+      "round": 1,
+      "run_id": "regression-1b0f2638-a052-42a7-8992-01aa9b28fd70",
+      "run_status": "completed",
+      "assessment": "no_confirmed_findings",
+      "statistics": {
+        "executed_cases": 6,
+        "passed_cases": 6,
+        "failed_cases": 0
+      },
+      "tests_unchanged": true,
+      "feedback_status": "regression_passed"
+    },
+    {
+      "round": 2,
+      "run_id": "regression-ab237a2c-3514-4304-a67b-0b2a3fd1b617",
+      "run_status": "completed",
+      "assessment": "no_confirmed_findings",
+      "statistics": {
+        "executed_cases": 6,
+        "passed_cases": 6,
+        "failed_cases": 0
+      },
+      "tests_unchanged": true,
+      "feedback_status": "regression_passed"
+    },
+    {
+      "round": 3,
+      "run_id": "regression-42f42009-b4d1-4dc4-942c-b7a070bf660a",
+      "run_status": "completed",
+      "assessment": "no_confirmed_findings",
+      "statistics": {
+        "executed_cases": 6,
+        "passed_cases": 6,
+        "failed_cases": 0
+      },
+      "tests_unchanged": true,
+      "feedback_status": "regression_passed"
+    }
+  ],
+  "reviewed_root_causes": [
+    {
+      "id": "shipping-threshold",
+      "description": "Subtotal 100 must have zero shipping; buggy code uses > instead of >=."
+    },
+    {
+      "id": "coupon-percentage",
+      "description": "SAVE10 should deduct 10%; buggy code deducts 5%."
+    }
+  ],
+  "limitations": [
+    "Seeded development fixture, not a held-out benchmark.",
+    "Six finding records across three rounds represent two reviewed fixture defects.",
+    "No independent oracle reviewer or learned hybrid ranking was added.",
+    "Stagnation is normalized test-content equality, not proof that no further defects exist."
+  ]
+}
