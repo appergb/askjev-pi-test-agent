@@ -1,70 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1330" viewBox="0 0 1600 1330" role="img" aria-labelledby="title desc">
-<title id="title">askJEV Agent 评分与选测目标架构</title><desc id="desc">当前 1.4 的任务、执行和 GPU 服务作为基础；拟新增证据包、评分质量门、混合选择器及离线评估闭环。GPU 推理优化不替代缺陷判断。</desc>
-<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#52796b"/></marker></defs>
-<style>text{font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;fill:#1c332c}.body{font-size:20px}.muted{fill:#64766e;font-size:18px}.title{font-size:27px;font-weight:600}.pill{font-size:15px;font-weight:600}.link{fill:none;stroke:#52796b;stroke-width:2.5;marker-end:url(#arrow)}.planned{fill:#fffaf1;stroke:#c88b39;stroke-width:2;stroke-dasharray:8 5}.existing{fill:#ffffff;stroke:#92b6a4;stroke-width:2}</style>
-<rect width="1600" height="1330" fill="#f4f6f2"/>
-<rect x="0" y="0" width="1600" height="10" fill="#264d3f"/>
-<text x="48" y="66" font-size="38" font-weight="700">askJEV Agent · 评分与选测目标架构</text>
-<text x="48" y="106" font-size="21" fill="#576c60">先保证需求覆盖，再用评分安排预算；低分不是缺陷，高分不是免测证明。</text>
-<text x="48" y="146" class="muted">运行基线：v1.4.0　｜　设计日期：2026-09-22　｜　虚线模块为拟新增能力，尚未上线</text>
-<rect x="1290" y="55" width="120" height="30" rx="15" fill="#dfebe3"/><text x="1315" y="76" class="pill">已实现</text>
-<rect x="1422" y="55" width="130" height="30" rx="15" fill="#f8e4c4"/><text x="1446" y="76" class="pill">拟新增</text>
-<rect x="48" y="180" width="470" height="230" rx="18" class="existing"/>
-<text x="72" y="222" class="title" >01  任务与不可变快照</text>
-<text x="72" y="262" class="body" >授权源码 · 需求合同 · 当前改动</text>
-<text x="72" y="294" class="body" >时间 / 检查项 / 轮次预算</text>
-<text x="72" y="326" class="body" >项目绑定 · 独立持久会话</text>
-<text x="72" y="390" class="muted" >现有：CLI、Skills、Session、Snapshot</text>
-<rect x="565" y="180" width="470" height="230" rx="18" class="planned"/>
-<text x="589" y="222" class="title" >02  候选与结构化证据</text>
-<text x="589" y="262" class="body" >具体输入 → 预期输出 → 关联分支</text>
-<text x="589" y="294" class="body" >边界 / 改动 / 回归 / 依赖完整性</text>
-<text x="589" y="326" class="body" >候选去重 · 需求覆盖义务</text>
-<text x="589" y="390" class="muted" >现有场景生成；拟增强证据与覆盖建模</text>
-<rect x="1082" y="180" width="470" height="230" rx="18" class="planned"/>
-<text x="1106" y="222" class="title" >03  评分适配与质量门</text>
-<text x="1106" y="262" class="body" >JEV 原始分数 + 版本与快照身份</text>
-<text x="1106" y="294" class="body" >校验饱和 / 并列 / 缺失 / 分歧</text>
-<text x="1106" y="326" class="body" >不可靠时停用模型分数特征</text>
-<text x="1106" y="390" class="muted" >原始分数≠真实缺陷概率；校准待评估</text>
-<path class="link" d="M518 292 H555"/><path class="link" d="M1035 292 H1072"/>
-<path class="link" d="M1317 410 V447 H283 V470"/>
-<text x="516" y="437" class="muted" >可信：加入风险特征　｜　降级：仅按规则、覆盖与探索选择</text>
-<rect x="48" y="480" width="470" height="230" rx="18" class="planned"/>
-<text x="72" y="522" class="title" >04  带约束的混合选择器</text>
-<text x="72" y="562" class="body" >先必测；再风险 / 覆盖 / 探索</text>
-<text x="72" y="594" class="body" >便宜小任务 → 全测</text>
-<text x="72" y="626" class="body" >预算不足 → 明确未覆盖义务</text>
-<text x="72" y="690" class="muted" >保留显式 lowest / highest / range 模式</text>
-<rect x="565" y="480" width="470" height="230" rx="18" class="planned"/>
-<text x="589" y="522" class="title" >05  真实执行与缺陷复核</text>
-<text x="589" y="562" class="body" >Node / Chrome → 断言、步骤、截图</text>
-<text x="589" y="594" class="body" >重复复现 · 校验断言与需求</text>
-<text x="589" y="626" class="body" >修复后复用原测试，不削弱断言</text>
-<text x="589" y="690" class="muted" >现有执行与回归；独立复核待新增</text>
-<rect x="1082" y="480" width="470" height="230" rx="18" class="planned"/>
-<text x="1106" y="522" class="title" >06  反馈、标注与持续评估</text>
-<text x="1106" y="562" class="body" >按根因合并 · 区分产品 / 测试故障</text>
-<text x="1106" y="594" class="body" >高分抽查 · 未知项探索 · 周期全测</text>
-<text x="1106" y="626" class="body" >记录成本、抽样概率与未测项</text>
-<text x="1106" y="690" class="muted" >现有交接与证据；标签与评估闭环待增</text>
-<path class="link" d="M518 592 H555"/><path class="link" d="M1035 592 H1072"/>
-<path class="link" d="M1317 710 V765"/>
-<rect x="48" y="780" width="1504" height="156" rx="18" class="planned"/>
-<text x="72" y="821" class="title" >离线质量闭环：独立真值 → 分仓库保留集 → 排序 / 校准 → 影子比较 → 版本门控</text>
-<text x="72" y="862" class="body" >评估目标：根因召回 / 总费用 / 首次确认时间 / 必测覆盖；未测不标为通过，失败不直接标为产品缺陷。</text>
-<text x="72" y="901" class="muted" >只有在保留集证明收益后才启用新策略；模型、模板或数据分布变化后重新验收。</text>
-<rect x="48" y="978" width="1504" height="236" rx="18" fill="#e4eee7" stroke="#92b6a4" stroke-width="2"/>
-<text x="72" y="1020" class="title" >现有推理基础设施 · NVIDIA DGX Spark / GB10</text>
-<text x="72" y="1062" class="title" >JEV 评分服务</text>
-<text x="72" y="1098" class="body" >Qwen3-4B · PyTorch CUDA · BF16 · SDPA</text>
-<text x="72" y="1133" class="muted" >Qwen3-4B 指令模型适配；标签概率未校准</text>
-<line x1="780" y1="1042" x2="780" y2="1164" stroke="#b1c7b8"/>
-<text x="810" y="1062" class="title" >自托管千问生成服务</text>
-<text x="810" y="1098" class="body" >NVFP4 / FP8 · SGLang · FlashInfer · CUDA Graphs</text>
-<text x="810" y="1133" class="body" >FP8 KV cache · Radix / LFU · 内置 MTP</text>
-<text x="72" y="1183" class="muted" >外部 Flash / GLM 仍可作为生成服务；GPU 优化提升推理效率，不保证评分正确。</text>
-<path class="link" stroke-dasharray="7 5" d="M48 854 H24 V163 H1317 V170"/>
-<text x="72" y="1266" class="body" >当前可用的稳妥路径：默认全测；显式选测必须报告覆盖缺口。下一阶段交付以虚线模块为准。</text>
-<text x="72" y="1301" class="muted" >设计与实现状态分离 · 复用现有 GPU 服务 · 模型版本与协议可追溯</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1536" viewBox="0 0 1120 1536" role="img" aria-labelledby="title desc">
+<title id="title">用户操作与双轮评估</title><desc id="desc">先定义成功，再探索偏离最短路径的操作；最终用执行结果验证。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#84958e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{font-family:Inter,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif} .title{font-size:36px;font-weight:650;letter-spacing:-.7px} .label{font-size:20px;letter-spacing:1px;font-weight:600} .heading{font-size:26px;font-weight:600} .body{font-size:22px} .small{font-size:20px} .mono{font-family:"SFMono-Regular",Consolas,monospace;font-size:20px}</style>
+<rect x="0" y="0" width="1120" height="1536" rx="0" fill="#f5f7f2"/>
+<rect x="48" y="40" width="8" height="40" rx="4" fill="#178068"/>
+<text x="76" y="70" class="title" fill="#18372e">askJEV / 用户操作与双轮评估</text>
+<text x="48" y="112" class="small" fill="#617168">先定义成功，再探索偏离最短路径的操作；最终用执行结果验证。</text>
+<text x="1038" y="70" class="label" fill="#9aaa9e">02</text>
+<rect x="48" y="1470" width="1024" height="1" rx="0" fill="#d5dfd5"/>
+<text x="48" y="1506" class="small" fill="#617168">目标设计  /  虚线模块待实现；当前仍为 task.json + 单轮评分</text>
+<rect x="48" y="150" width="1024" height="130" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="72" y="179" class="small" fill="#b18c40">INPUT / 输入</text>
+<text x="72" y="215" class="heading" fill="#18372e">批准的代码或本地页面 + 需求</text>
+<text x="72" y="249" class="body" fill="#607168">代码切片 · 页面结构 · 初始状态 · 任务范围</text>
+<path d="M560 280 V318" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="48" y="328" width="1024" height="142" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="72" y="357" class="small" fill="#b18c40">01 / 对话层补齐缺失信息</text>
+<text x="72" y="393" class="heading" fill="#18372e">最少做什么算成功？最多需要支持到哪里？</text>
+<text x="72" y="427" class="body" fill="#607168">明确用户目标、成功结果、业务范围与本轮探索预算</text>
+<path d="M300 470 V510" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M820 470 V510" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="48" y="520" width="488" height="160" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="72" y="549" class="small" fill="#b18c40">02 / 测试起点</text>
+<text x="72" y="585" class="heading" fill="#18372e">最短成功路径</text>
+<text x="72" y="619" class="body" fill="#607168">从约定初始状态出发</text>
+<text x="72" y="649" class="body" fill="#607168">基线先执行，核对可见结果</text>
+<rect x="584" y="520" width="488" height="160" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="608" y="549" class="small" fill="#b18c40">03 / 围绕基线扩展</text>
+<text x="608" y="585" class="heading" fill="#18372e">少见但可能的操作</text>
+<text x="608" y="619" class="body" fill="#607168">省略 · 重复 · 撤回 · 顺序变化</text>
+<text x="608" y="649" class="body" fill="#607168">边界值与状态组合；步数有上限</text>
+<path d="M536 600 H576" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M300 680 V716 H820 V680" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 6"/>
+<path d="M560 716 V744" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="48" y="754" width="1024" height="74" rx="14" fill="#e3efe5" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="72" y="800" class="heading" fill="#18372e">冻结同一份源码、需求、候选路径与预期，附上必要证据</text>
+<path d="M560 828 V862 H300 V884" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M560 862 H820 V884" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="48" y="894" width="488" height="162" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="72" y="923" class="small" fill="#b18c40">04A / 第一轮</text>
+<text x="72" y="959" class="heading" fill="#18372e">需求核对</text>
+<text x="72" y="993" class="body" fill="#607168">沿路径逐步验证需求是否满足</text>
+<text x="72" y="1023" class="body" fill="#607168">保存原始分布、版本和耗时</text>
+<rect x="584" y="894" width="488" height="162" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="608" y="923" class="small" fill="#b18c40">04B / 第二轮</text>
+<text x="608" y="959" class="heading" fill="#18372e">反例检查</text>
+<text x="608" y="993" class="body" fill="#607168">同一证据；不看首轮分数和结论</text>
+<text x="608" y="1023" class="body" fill="#607168">检查边界、状态残留与遗漏条件</text>
+<path d="M300 1056 V1092 H820 V1056" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 6"/>
+<path d="M560 1092 V1120" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="48" y="1130" width="1024" height="132" rx="16" fill="#fffaf0" stroke="#d8ba7c" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="72" y="1159" class="small" fill="#b18c40">05 / 解释与安排</text>
+<text x="72" y="1195" class="heading" fill="#18372e">记录一致、分歧与未知；关键路径不因高分免测</text>
+<text x="72" y="1229" class="body" fill="#607168">按覆盖、边界和预算安排；同错不当作可靠，不平均掩盖分歧</text>
+<path d="M560 1262 V1300" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="1310" width="1024" height="140" rx="16" fill="#173b31"/>
+<text x="72" y="1345" class="small" fill="#c2d8ca">06 / 复用现有执行与回归，补上独立复核设计</text>
+<text x="72" y="1384" class="heading" fill="#ffffff">实际测试 → 失败证据 → 复现与复核 → 修复后原测试</text>
+<text x="72" y="1420" class="body" fill="#c2d8ca">再用保留样本评估双轮是否带来检出收益与时间收益</text>
 </svg>

@@ -1,161 +1,140 @@
 # askJEV Agent
 
-**面向代码测试与问题排查的优化过的 Agent 框架。** 编码 Agent 通过独立 Skill 调用 CLI，由测试 Agent 生成并执行测试，保存复现证据，交接缺陷，并验证修复。
+**从用户要完成的事情出发，用真实测试定位代码问题，并用原测试验证修复。**
 
-当前版本 **1.5.0，工程试用阶段**。支持明确授权的 JavaScript 模块与本地静态前端 Chrome 功能测试。测试在本地执行，云端提供生成与评分服务。
+askJEV Agent 基于 Pi Agent 内核，把需求、源码快照、测试生成、JEV 评分、隔离执行和缺陷交接串成一个流程。你可以在终端中直接使用，也可以由编码 Agent 通过配套 Skill 调用。
 
-2026-09-23 发布检查：**51 项 Agent 检查、36 项 API 代理检查通过**；真实 JavaScript 与浏览器样例分别完成 8 项和 6 项测试，检出的预置缺陷在配套修复版原测试回归中全部通过。当前成熟度与比赛限制见 [完整质量评估](docs/quality-review-2026-09-23.md)。
+当前版本 **1.5.0 · 工程试用版**。支持选定 JavaScript 模块与本地静态页面的 Chrome 功能测试。测试在本机执行，生成服务与评分服务独立配置。
 
-[安装技能](docs/skill-installation.md) · [CLI](docs/cli.md) · [会话管理](docs/sessions.md) · [持续自动测试](docs/campaigns.md) · [评分架构设计](docs/architecture/scoring-selection-v2.md) · [NVIDIA 技术清单](docs/architecture/nvidia-stack.md)
+[快速开始](#快速开始) · [当前架构](docs/framework.md) · [评分如何实现](docs/architecture/scoring-selection-v2.md#当前评分的实际实现) · [新测试流程设计](docs/architecture/scoring-selection-v2.md#目标流程先明确用户操作再测试) · [质量报告](docs/quality-review-2026-09-23.md)
 
-## 交互终端
+## 能做什么
 
-安装 CLI 后，在项目目录运行：
+| 能力 | 当前行为 |
+| --- | --- |
+| 交互终端 | `askjev-cli` 打开 askJEV 对话界面，显示测试进度、结果与报告路径；模型由配置固定 |
+| 测试与取证 | 按任务授权读取源码和需求，生成 Node 测试或浏览器操作计划，记录实际断言、输出与截图 |
+| 评分与选测 | JEV 提供场景级支持度；默认执行全部候选，显式选测会列出未测试项 |
+| 多轮与后台 | `campaign` 在总预算内分轮补查并复现失败；`session` 管理后台任务和持久对话 |
+| 修复闭环 | 向编码 Agent 交接缺陷；修复后复用字节不变的原测试回归，并记录反馈 |
 
-```bash
-askjev-cli
-```
+## 快速开始
 
-进入带有 **askJEV** 标识的终端对话界面，可输入需求与已有 `task.json` 路径，或输入 `/run <task.json>` 直接执行原有测试流程。界面显示对话、测试进度、执行数量和报告路径；`/help` 查看命令，Esc 停止任务，Ctrl+D 退出。
+### 1. 安装一次，使用两个入口
 
-模型固定使用私密配置中的 `default_model`（缺省为 `flash-direct`），底部只显示操作提示和状态，不提供模型菜单、快捷键切换或 `--model` 参数。任务文件中的 `model` 不会覆盖该设置。`askjev-cli --project <目录> --config <私密配置>` 可指定工作目录与配置。每次启动是新对话，`/clear` 清空本次对话并保留测试证据。脚本和后台会话仍使用 `askjev`。[安装与命令说明](docs/cli.md)
+需要 **Node.js ≥22.19 与 npm**。当前本地执行器支持 macOS；浏览器测试还需要已安装的 Google Chrome。安装包不含模型凭据、Node 或 Chrome。
 
-## 使用你的 ChatGPT Codex 安装
-
-**请使用你的 ChatGPT Codex 安装该技能。** 将独立安装包 `askjev-agent-skill-1.5.0.tar.gz` 交给具备本地文件和终端能力的编码 Agent：
-
-> 请安装我提供的 askjev-agent 技能包，阅读 SKILL.md 并运行 scripts/install.mjs，安装配套 CLI、运行库与内置 Skills，保留已有私密配置并验证连接。之后测试本项目时，由技能管理独立会话、调用 CLI、读取实际失败证据，修复后执行原测试回归。不要把密钥写进仓库。
-
-安装器校验随包携带的固定版本 CLI；技能通过自己的调用脚本使用匹配版本。普通聊天界面若没有本地执行能力，无法安装本机程序。Node.js、Chrome 和模型凭据不包含在包中，依赖下载需要网络。
-
-从本仓库根目录制作安装包：
+从本仓库构建并全局安装 CLI：
 
 ```bash
 npm ci --ignore-scripts
 npm run package:skill
+npm install -g --ignore-scripts ./artifacts/releases/403-forbidden-askjev-agent-1.5.0.tgz
+askjev-cli --version
 ```
 
-包输出到 `artifacts/releases/`。解压后安装：
+若由编码 Agent 使用，选择[独立 Skill 安装方式](docs/skill-installation.md)：解压生成的 `askjev-agent-skill-1.5.0.tar.gz`，执行其中的 `scripts/install.mjs`。该方式自带匹配版本的私有运行库，无需再全局安装一份。安装包目前由源码构建，尚未发布到 npm registry。
 
-```bash
-node askjev-agent/scripts/install.mjs
-node ~/.codex/skills/askjev-agent/scripts/askjev.mjs --version
-```
+`askjev-cli` 是面向人的终端界面，`askjev` 是输出 JSON 的脚本入口；两者属于同一应用。`pi` 是独立的通用助手，`pi-web` 是其网页入口，安装 askJEV 无需另外安装它们。[本机入口与目录整理](docs/local-installation.md)
 
-支持 CODEX_HOME、自定义技能目录与安装目录，不覆盖无关技能、不修改 shell 配置。[完整安装说明](docs/skill-installation.md)
-
-## 连接模型与 DGX Spark
-
-以下命令使用已安装的 `askjev`；通过技能使用时，由技能的调用脚本执行同样参数。
+### 2. 配置已有模型服务
 
 ```bash
 askjev init
-# 填写 ~/.askjev-agent/config.json 中的服务地址与凭据引用
-askjev connect start
+# 在 ~/.askjev-agent/config.json 填写服务地址与凭据引用
 askjev doctor --probe --model flash-direct
 askjev doctor --browser
 ```
 
-生成服务与评分服务独立配置；直接可达的服务可省略 SSH 连接步骤。既有模型别名为 `flash-direct`、`glm`、`qwen-cloud`，其他环境按实际部署填写。配置样例均为占位值：[通用模型](config/agent.example.json)、[Spark 接入](config/spark.example.json)。
+私有 Skill 安装使用 `node ~/.codex/skills/askjev-agent/scripts/askjev.mjs` 代替上述 `askjev`；自定义技能位置以安装回执为准。已有配置会保留，`init` 拒绝覆盖。仅在私密配置要求 SSH 转发时先运行 `askjev connect start`；服务可直接访问时无需这一步。
 
-默认数据目录为 `~/.askjev-agent`，支持 `ASKJEV_HOME`、`ASKJEV_CONFIG` 和 `--config`。密钥只通过环境变量或明确引用的私密文件读取。
+生成服务负责提出场景、写测试与分析结果；JEV 服务负责评分。默认模型别名为 `flash-direct`，必须在私密配置中存在。连接示例见[通用配置](config/agent.example.json)与 [Spark 配置](config/spark.example.json)。凭据使用环境变量或私密文件引用，不能写进任务或仓库。
 
-## 测试与修复闭环
-
-```text
-任务与需求 → 源码快照 → 原测试基线 → 场景生成 → askJEV 评分
-    → 按策略执行 → 断言与截图证据 → 编码 Agent 修复 → 原测试回归
-```
+### 3. 打开终端，运行第一个任务
 
 ```bash
-askjev run --request <task.json>
+askjev example --directory /absolute/path/to/new-demo
+askjev-cli
+```
+
+进入后输入：
+
+```text
+/run /absolute/path/to/new-demo/task.json
+```
+
+示例包含预置缺陷，发现问题是预期结果。也可直接输入“请检查这个 task.json”。`/help` 查看命令，`/report` 查看最近结果，Esc 取消任务，空输入框下 Ctrl+D 退出。
+
+终端只使用私密配置中的默认模型，没有模型菜单或切换快捷键；任务文件的 `model` 不能覆盖它。脚本 `askjev run --model <alias>` 保留模型选项。每次打开终端是新对话，测试证据持续保存在本机。[完整 CLI 说明](docs/cli.md)
+
+## 当前框架结构
+
+![askJEV 1.5 当前架构：本地终端和测试编排连接独立的生成、评分服务，真实执行后保存证据并回归修复](docs/architecture/framework.svg)
+
+本地负责范围校验、不可变快照、执行与证据。Pi 提供 Agent 会话及工具调用能力，askJEV 在其上定义测试工具和流程。远端模型不直接执行本机命令；Node 测试进入 macOS 沙箱，浏览器按批准的静态资源和受限操作计划运行。
+
+当前不是一个网页前后端系统：面向用户的前端是终端，业务后端是本地测试运行时，生成与评分是独立服务。组件与源码对应关系见[框架说明](docs/framework.md)。
+
+## 现在如何评分
+
+每个候选场景包含操作、预期、需求原文和源码引用。Pi 将整批候选交给 `askJEV` 工具；适配器把相关源码和问题发到评分服务的 `POST /decide`。
+
+JEV 对每个场景回答：“实现是否满足这个预期？”候选答案为 `supported`（满足）、`violated`（违反）、`unknown`（信息不足）。已核对的服务使用 Qwen3-4B-Instruct-2507，读取下一答案标签的 logits，经 softmax 得到三个标签之间的相对支持度；客户端取 `P(supported)` 作为分数，信息不足或无效结果保留为 `null`。
+
+**评分在生成测试代码之前，每批一次。** 它针对待测业务实现与具体场景，不是整个项目的综合评分，也不是生成的测试代码质量分。网络失败重试不属于第二次独立评估。完整计算示例、输入字段和源码位置见[评分实现说明](docs/architecture/scoring-selection-v2.md#当前评分的实际实现)。
+
+高分仍可能有缺陷：2026-09-23 浏览器样例的六项支持度都是 1.0，实际执行发现两项失败。因此默认 `all` 全测；分数用于实验排序，不等于操作频率、正确率或已校准的缺陷概率。`lowest/highest/range` 是显式预算选择，未测项不能写成通过。[原始验收摘要](docs/evidence/quality-review-2026-09-23.json)
+
+## 下一步设计：从最少操作展开
+
+**以下是目标设计，尚未接入 1.5 运行时。本次更新文档与图示，不改变现有评分或选测。**
+
+![目标流程：理解代码或页面，确认最少成功操作和最大探索范围，从最短成功路径扩展少见操作，对同一证据做两次评估，再实际测试](docs/architecture/scoring-selection-v2.svg)
+
+1. **先明确任务。** 从代码或页面理解功能，向用户补齐尚不明确的目标：最少做哪些操作算完成？最多需要支持哪些选项、次数或顺序？已有需求能回答的部分直接复用。
+2. **先测最短成功路径。** 从明确的初始状态完成用户目标，建立可观察的结果。例如默认数量与配送方式下的价格显示。
+3. **扩展少见路径。** 围绕该路径增加省略、重复、撤回、顺序变化、边界值与状态组合。这里只产生“可能发生、尚未覆盖”的操作假设，不能仅凭模型分数判断真实用户很少操作什么。
+4. **用两个视角评估同一证据。** 第一轮核对需求是否被满足，第二轮在不看首轮结论的情况下检查反例、边界和遗漏条件。两轮相同高分仍保留实际测试；有分歧则明确记录并优先验证。
+5. **用执行反馈改进。** 记录失败复现、断言复核和修复后原测试结果，再比较两轮评分是否提高检出能力、是否值得额外时间。可靠性提升要靠保留集评估，不能靠多调用一次来宣称完成。
+
+用户所说的“最多”，在设计中区分业务允许的范围与本轮探索预算；不要求枚举无限操作序列。最少操作是基线，不替代异常场景。问答由 askJEV 对话层负责，JEV 是后台评分组件。[完整设计与验收条件](docs/architecture/scoring-selection-v2.md)
+
+## 实际测试与修复
+
+```bash
+askjev run --request <task.json> --select all
 askjev handoff --from <run-directory>
+# 编码 Agent 核对需求、证据并修改业务代码
 askjev regress --from <run-directory> --project <fixed-checkout>
 askjev feedback --from <run-directory> --regression <regression-directory>
 ```
 
-任务明确列出允许读取的源码、需求和预算。测试 Agent 生成测试，编码 Agent 修改业务实现。回归保留原测试字节，不复用旧源码评分。结果中的 `artifacts.directory` 指向证据目录；交接报告由调用方读取。
+任务必须列明允许读取的文件、需求和预算。`regress` 对新源码执行全部保存的原测试；`replay` 则使用原快照、原分数与原测试比较选测策略，不能用于验证修复。结果路径由 `artifacts.directory` 返回。[任务格式](docs/mvp/configuration.md) · [浏览器测试](docs/frontend-testing.md)
 
-## 持续自动测试
+需要持续补查时使用 `campaign --rounds 3 --max-seconds 600 --max-model-turns 60`；需要后台执行时使用 `session run` 或 `session campaign`。评分故障默认严格失败，显式 `--scoring-failure all` 仅允许在全量策略下继续，并保留缺失评分。提交后台任务成功不代表测试通过。[持续测试](docs/campaigns.md) · [会话管理](docs/sessions.md)
 
-```bash
-askjev campaign --request <task.json> --select all --scoring-failure all \
-  --rounds 3 --max-seconds 600 --max-model-turns 60
-```
+## 验证与适用范围
 
-固定同一份源码快照，分轮生成与执行测试，把已测场景和未引用的需求交给下一轮；出现失败时自动用原测试复现。总时间、轮数和模型调用轮次有上限，连续没有新测试内容时提前停止。每轮结果、复现证据及汇总交接持续写入本地目录。
+2026-09-23 的发布验证如下。数字对应所列版本和样本，后续设计尚未计入。
 
-需要离开前台时，用 `session campaign --id <id> --request <task.json> --rounds 3` 在后台运行，再用 `session inspect/logs/stop` 管理。每轮使用独立模型对话，避免把历史结果当作本轮证据。它不是无限循环，也没有崩溃后步骤续跑。[完整说明](docs/campaigns.md)
+| 验证 | 结果 |
+| --- | --- |
+| Agent 与终端 | 51 项检查通过；`src` 行覆盖率 94.30%，分支 78.44% |
+| 模型 API 代理 | 36 项检查通过；行覆盖率 94.91%，严格类型与静态检查通过 |
+| 两个受控样例 | JavaScript 8 项、浏览器 6 项，各检出两个预置缺陷；修复版原测试 8/8、6/6 通过 |
+| 真实仓库 klona | 历史验证找到一类 DataView 克隆缺陷；修复后 16 组原测试通过，上游基线 137/137 |
 
-## 独立会话与并行任务
+支持范围为选定 JavaScript 模块和本地静态页面；生成模型可见源码与需求合计最多 16 KB，快照最多 512 KB，评分服务历史核对上限为 4096 tokens。暂不支持任意生产网址、登录/支付流程、通用后端 API、视觉差异测试、Linux 沙箱或步骤级断点恢复。双轮评估、自动最少/最多操作问答、独立复核与校准仍属设计。
 
-```bash
-askjev session create --name frontend --count 2
-askjev session run --id <id> --request <task.json>
-askjev session inspect --id <id>
-askjev session logs --id <id>
-askjev session stop --id <id>
-askjev session clear --id <id>
-askjev session restart --id <id>
-```
+目前没有多仓库盲测证明检错准确率、漏报率或评分收益。GPU 推理调优、模型权重训练和评分概率校准是不同工作；当前没有项目自行训练 JEV 权重的验证记录。Spark 承担评分与可选自托管生成，默认外部 Flash 生成不能计为本机 CUDA 加速。[质量报告](docs/quality-review-2026-09-23.md) · [NVIDIA 技术与证据](docs/architecture/nvidia-stack.md)
 
-同一会话保留模型历史，不同会话独立运行。同一会话禁止重叠任务。清空删除对话上下文，保留测试证据；重开会重新提交任务。后台提交成功不代表测试通过，需要等待实际结果。这是应用层生命周期管理，尚无 Docker 级系统隔离或资源配额。
+## 文档导航
 
-## 评分筛选：当前能力与下一步
+| 主题 | 入口 |
+| --- | --- |
+| 安装与本机入口 | [Skill 安装](docs/skill-installation.md) · [目录与重复安装整理](docs/local-installation.md) |
+| 当前实现 | [框架](docs/framework.md) · [CLI](docs/cli.md) · [组件来源](THIRD_PARTY_NOTICES.md) |
+| 评分与未来设计 | [评分机制和用户操作设计](docs/architecture/scoring-selection-v2.md) · [能力路线](docs/diagnostic-roadmap.md) |
+| 证据与历史 | [公开质量报告](docs/quality-review-2026-09-23.md) · [真实仓库评估](docs/mvp/github-evaluation.md) · [改动记录](CHANGELOG.md) |
 
-**当前默认全测。评分是辅助信号，不是用户操作概率，也不是软件正确率。** 显式选测可用于预算实验：
-
-```bash
-askjev run --request examples/frontend-shop/task.json --select lowest --count 3
-askjev replay --from <run-directory> --select all
-```
-
-也支持最高分前 N 项和分数区间；未选中项明确标为未测试。`replay` 比较冻结源码、分数与测试，不用于验证修复。
-
-现有 JEV 读取下一答案标签的条件概率，尚未校准为缺陷概率。购物结算实验中，优惠码错误得到约 `0.00247` 的低分，免运费边界错误却得到 `1.0`；只测低分会漏检。后续复测只测一项也曾未检出预置缺陷。[实验记录](docs/evidence/frontend-1.3.json)
-
-1.5 已增加评分饱和、并列与未知项诊断，保存为 `score-quality.json`。诊断用于暴露问题，不会把分数变成可靠置信度。`--scoring-failure all` 允许评分服务失败后继续全量测试，缺失评分保持 null；只在 `--select all` 下启用，严格选测不会被暗中扩大。默认错误策略仍为 strict。
-
-**后续设计，尚未实现：**
-
-- 小任务优先全测，避免评分成本超过省下的执行成本。
-- 引入需求边界、改动影响与历史回归的必测集合。
-- 使用风险、覆盖增益和分层探索共同选择，保留高分与未知项抽查。
-- 在现有饱和/并列诊断上增加上下文与模型分歧检查，并与混合选择器联动。
-- 建立根因级真值和多仓库评估，达到门槛后才引入学习排序与概率校准。
-
-![评分与选测目标架构；虚线模块尚未上线](docs/architecture/scoring-selection-v2.svg)
-
-[完整架构设计](docs/architecture/scoring-selection-v2.md) · [下载 SVG](docs/architecture/scoring-selection-v2.svg)
-
-## NVIDIA CUDA 与模型推理调优
-
-**JEV 是基于经过后训练的 Qwen3-4B 系列指令模型构建、面向测试场景适配的决策评分模型。** 它结合需求、源码与候选检查项输出评分信号，为测试优先级安排提供依据。
-
-针对 **NVIDIA DGX Spark / GB10**，JEV 与千问服务已完成部署适配和推理参数调优。
-
-| 路径 | 已使用的技术 | 项目工作 |
-| --- | --- | --- |
-| JEV 评分 | Qwen3-4B 指令后训练版本、PyTorch CUDA、BF16、SDPA | GPU 部署、版本固定、评分协议与测试联调 |
-| 千问生成 | 混合 NVFP4/FP8 checkpoint、SGLang、FlashInfer | 单机服务接入、工具调用及推理参数适配 |
-| 生成性能 | CUDA Graphs、FP8 KV cache、Radix/LFU 前缀缓存、模型内置 MTP | 图捕获与缓存路径验收、交互延迟和吞吐取舍 |
-| 单机资源 | 内存比例、分块预填充、Mamba 状态与调度配置 | 为评分和生成服务共存保留资源 |
-
-JEV 当前使用 `Qwen3-4B-Instruct-2507`，其基础模型经历预训练与后训练，详见 [模型说明](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)。评分服务已核实采用 CUDA/BF16；标签概率尚未校准为缺陷概率。千问生成服务采用混合 NVFP4/FP8 权重，结合缓存与推测解码优化推理效率。
-
-CUDA Graphs 用于减少重复 GPU 工作提交开销，原理见 [NVIDIA 文档](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html)。它和缓存优化提升的是推理效率，不保证评分判断正确。Flash/GLM 外部 API 与本机 Chrome 测试不计入 Spark CUDA 加速的证明。
-
-部署参数与历史性能观测见 [技术清单](docs/architecture/nvidia-stack.md)。测试框架通过现有私密连接调用服务；云端部署参数单独管理。
-
-## 验证与当前边界
-
-- **1.5：47 项检查通过。** 真实后台任务计划最多五轮，在第三轮因连续没有新测试内容自动停止；三轮共执行 18 项、复现执行 18 项。六条失败记录对应两个已复核的预置缺陷；修复版原测试通过。新增评分异常显式降级与质量诊断。[运行证据](docs/evidence/campaign-1.5.json)
-- **1.4：39 项基础设施检查通过**；独立技能自安装、两个真实后台会话、历史上下文恢复与清空均已验证。[记录](docs/evidence/skill-session-1.4.json)
-- **前端样例：** 全量六项发现两个预置缺陷，修复后原测试 6/6 通过；这不是外部工程的盲测结果。
-- **真实仓库 klona：** 找到 DataView 克隆的一类缺陷，修复后 16 组原生成测试通过；原版和修复版上游测试均为 137/137。[记录](docs/evidence/klona-1.1.json)
-
-当前支持选定 JavaScript 模块和本地静态前端；模型可见输入 16 KB、快照 512 KB。评分服务 4096-token 上限与生成服务的长上下文能力分开管理。尚不支持生产网站、支付/登录流程、后端 API、视觉差异测试或执行步骤断点恢复。新架构中的 hybrid、独立复核、根因自动去重与校准训练仍是待实现能力。持续任务已有失败重现，尚不能独立证明断言符合业务需求。
-
-业务命令输出 JSON；退出码为 0 成功无确认问题、1 完成且有问题、2 输入/配置无效、3 失败、4 不完整、5 取消。局部通过不等于软件没有 bug。
-
-[改动记录](CHANGELOG.md) · [后续能力路线](docs/diagnostic-roadmap.md) · [组件来源说明](THIRD_PARTY_NOTICES.md)
+公开仓库：[appergb/askjev-pi-test-agent](https://github.com/appergb/askjev-pi-test-agent)。私密配置、会话、原始日志和凭据不随源码或安装包发布。

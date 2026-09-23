@@ -29,6 +29,8 @@
 
 评分选测目标设计见 `docs/architecture/scoring-selection-v2.md` 与配套 SVG，NVIDIA 技术使用见 `docs/architecture/nvidia-stack.md`。这些是后续设计，不代表 1.4 已实现 hybrid/校准/独立复核。模型权重训练不得与部署及推理参数调优混称。
 
+当前框架图见 `docs/architecture/framework.svg`。2026-09-23 重写的评分设计区分当前单批单轮支持度评分与目标的用户最少/最多操作问答、最短成功路径、少见路径扩展和双轮评估；这些新流程仅为文档设计，未改 1.5 运行时。`min_cases/max_cases` 不等于操作步数，评分不等于用户行为频率。安装入口关系见 `docs/local-installation.md`。
+
 1.5 持续任务见 `docs/campaigns.md`：campaign / session campaign 在总预算内分轮测试，默认 all，每轮独立对话，失败用原测试重现。scoring_failure=all 只允许 all 策略；strict 仍是默认。测试指纹与需求引用仅用于停滞/覆盖提示，不能作为根因去重或完整覆盖证明。质量诊断和故障降级已实现，hybrid/独立复核/校准未实现。
 
 交互终端入口为 `askjev-cli`，实现位于 `src/terminal.mjs` 与 `src/terminal-agent.mjs`，使用 Pi 终端组件并复用现有测试流程。交互界面固定使用私密配置默认模型，不提供模型菜单、切换快捷键或任务级模型覆盖；脚本入口 `askjev` 的模型选项保持原行为。终端对话仅在当前进程保留，测试证据持久保存；使用与安装见 `docs/cli.md`。

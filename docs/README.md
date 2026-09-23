@@ -1,5 +1,7 @@
 # askJEV Agent 文档
 
+从 [当前框架](framework.md) 理解终端、本地运行时和模型服务；[评分与行为探索设计](architecture/scoring-selection-v2.md) 分别说明现有单轮评分和待实现的最少操作起点、少见路径与双轮评估。[本机入口整理](local-installation.md) 解释 `pi`、`pi-web`、`askjev-cli` 与 `askjev` 的关系。
+
 最新发布质量、终端前端/后端完成度与比赛演示评估见 [2026-09-23 质量报告](quality-review-2026-09-23.md)。
 
 持续测试见 [campaigns.md](campaigns.md)。

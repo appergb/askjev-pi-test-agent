@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1110" viewBox="0 0 1120 1110" role="img" aria-labelledby="title desc">
+<title id="title">当前框架</title><desc id="desc">本地负责测试与证据；生成服务和 JEV 评分服务分别接入。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#84958e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<style>text{font-family:Inter,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif} .title{font-size:36px;font-weight:650;letter-spacing:-.7px} .label{font-size:20px;letter-spacing:1px;font-weight:600} .heading{font-size:26px;font-weight:600} .body{font-size:22px} .small{font-size:20px} .mono{font-family:"SFMono-Regular",Consolas,monospace;font-size:20px}</style>
+<rect x="0" y="0" width="1120" height="1110" rx="0" fill="#f5f7f2"/>
+<rect x="48" y="40" width="8" height="40" rx="4" fill="#178068"/>
+<text x="76" y="70" class="title" fill="#18372e">askJEV / 当前框架</text>
+<text x="48" y="112" class="small" fill="#617168">本地负责测试与证据；生成服务和 JEV 评分服务分别接入。</text>
+<text x="1038" y="70" class="label" fill="#9aaa9e">01</text>
+<rect x="48" y="1044" width="1024" height="1" rx="0" fill="#d5dfd5"/>
+<text x="48" y="1080" class="small" fill="#617168">1.5 已实现  /  默认全测 · 高分不代表通过</text>
+<rect x="48" y="150" width="1024" height="138" rx="16" fill="#173b31" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="72" y="179" class="small" fill="#c2d8ca">ENTRY / 人与工具</text>
+<text x="72" y="215" class="heading" fill="#ffffff">一个应用，两个入口</text>
+<text x="72" y="249" class="body" fill="#c2d8ca">askjev-cli 交互终端     ·     askjev 脚本 / 后台会话     ·     编码 Agent Skill</text>
+<path d="M364 288 V342" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="330" class="label" fill="#18372e">LOCAL / 本机运行时</text>
+<text x="744" y="330" class="label" fill="#18372e">SERVICES / 模型服务</text>
+<rect x="48" y="352" width="632" height="132" rx="16" fill="#ffffff" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="72" y="381" class="small" fill="#607168">01 / 准备与编排</text>
+<text x="72" y="417" class="heading" fill="#18372e">批准的快照 → 原基线 → 候选场景</text>
+<text x="72" y="451" class="body" fill="#607168">Pi 会话 + askJEV 测试工具 + 文件与时间预算</text>
+<rect x="744" y="352" width="328" height="132" rx="16" fill="#ffffff" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="768" y="381" class="small" fill="#607168">生成服务</text>
+<text x="768" y="417" class="heading" fill="#18372e">提出场景、编写测试</text>
+<text x="768" y="451" class="body" fill="#607168">默认 Flash / 可配置服务</text>
+<path d="M680 396 H736" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M744 440 H688" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M364 484 V536" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="546" width="632" height="132" rx="16" fill="#ffffff" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="72" y="575" class="small" fill="#607168">02 / 评分与选择</text>
+<text x="72" y="611" class="heading" fill="#18372e">一批候选，评分一次</text>
+<text x="72" y="645" class="body" fill="#607168">all 默认全测；数值选测显式记录未测项</text>
+<rect x="744" y="546" width="328" height="132" rx="16" fill="#ffffff" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="768" y="575" class="small" fill="#607168">JEV 评分服务</text>
+<text x="768" y="611" class="heading" fill="#18372e">场景级支持度</text>
+<text x="768" y="645" class="body" fill="#607168">POST /decide · 三标签</text>
+<path d="M680 590 H736" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M744 634 H688" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M364 678 V730" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="740" width="632" height="132" rx="16" fill="#e3efe5" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="72" y="769" class="small" fill="#607168">03 / 生成与实际执行</text>
+<text x="72" y="805" class="heading" fill="#18372e">Node 沙箱 / Chrome 静态页面</text>
+<text x="72" y="839" class="body" fill="#607168">保存全部测试；只执行选择集合</text>
+<rect x="744" y="740" width="328" height="132" rx="16" fill="#ffffff" stroke="#c6d5c8" stroke-width="1.5"/>
+<text x="768" y="769" class="small" fill="#607168">EVIDENCE / 本地</text>
+<text x="768" y="805" class="heading" fill="#18372e">断言、截图与报告</text>
+<text x="768" y="839" class="body" fill="#607168">保留实际结果和未完成项</text>
+<path d="M680 808 H736" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M908 872 V918" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="928" width="1024" height="96" rx="16" fill="#173b31"/>
+<text x="72" y="964" class="small" fill="#c2d8ca">04 / 修复闭环</text>
+<text x="72" y="1000" class="heading" fill="#ffffff">缺陷交接  →  编码 Agent 修复  →  字节不变的原测试回归</text>
+<path d="M48 977 H24 V806 H40" fill="none" stroke="#84958e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+</svg>
