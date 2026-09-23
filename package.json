@@ -41,6 +41,7 @@
     "examples/retry-demo-fixed/",
     "docs/cli.md",
     "docs/framework.md",
+    "docs/local-installation.md",
     "docs/diagnostic-roadmap.md",
     "THIRD_PARTY_NOTICES.md",
     "README.md",
