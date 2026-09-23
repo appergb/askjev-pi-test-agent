@@ -24,13 +24,14 @@
 | Node 生产依赖审计 | 已知漏洞通告 0 项 | 数据库查询结果，不是完整安全审计 |
 | 发布检查 | 配置/运行产物排除、安装包白名单、锁文件与入口一致性 | 私密配置与云节点地址不属于发布内容 |
 
-新增 GitHub Actions 在 macOS 执行完整 Agent 测试与打包，在 Linux 检查 Python API 代理；不依赖私密模型凭据，不在 CI 部署云节点。代理覆盖率门槛为 90%。实际远端执行状态可查看仓库的 [Actions](https://github.com/appergb/askjev-pi-test-agent/actions)。
+新增 GitHub Actions 在 macOS 的 Node 22.19.0 和 26.8.1 上执行完整 Agent 测试与打包，在 Linux 检查 Python API 代理；不依赖私密模型凭据，不在 CI 部署云节点。代理覆盖率门槛为 90%。实际远端执行状态可查看仓库的 [Actions](https://github.com/appergb/askjev-pi-test-agent/actions)。
 
-本次审查修复了三个可复现问题：
+本次审查修复了四个可复现问题：
 
 1. 代理在等待上游响应时被取消，会遗留并发名额，积累后使后续请求无法进入。现在异常、取消与流响应结束均归还名额。
 2. 分块请求原先先读完再校验大小；现在逐块检查，超过限制立即返回 413 并停止继续读取。
 3. Node 覆盖率环境自动传入隔离测试，尝试写沙箱之外的目录，让原本通过的测试被归为环境失败。现在明确禁用测试子进程的宿主覆盖率输出，同时保留既有沙箱限制。
+4. GitHub 在最低支持版本 Node 22.19.0 上复现测试启动失败。原参数名称在该版本不可用，现使用兼容的新旧版本均接受的 `--experimental-test-isolation=none`；对应 [Node 22 官方文档](https://nodejs.org/download/release/v22.19.0/docs/api/cli.html#--experimental-test-isolationmode)。
 
 取消和超大请求的回归用例先在修复前复现失败，修复后通过。流响应清理异常也有回归检查。
 

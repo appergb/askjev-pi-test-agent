@@ -25,7 +25,7 @@ export async function executeTest(workspace, testFile, { signal, timeout = 10000
   const node = await fs.realpath(process.execPath);
   const cwd = await fs.realpath(workspace);
   check(['node-test', 'uvu'].includes(framework), 'Unsupported execution framework');
-  const command = framework === 'uvu' ? [node, testFile] : [node, '--test', '--test-isolation=none', '--test-reporter=tap', testFile];
+  const command = framework === 'uvu' ? [node, testFile] : [node, '--test', '--experimental-test-isolation=none', '--test-reporter=tap', testFile];
   const args = ['-p', seatbeltProfile(cwd, node, readRoots), ...command];
   const started_at = new Date().toISOString();
   const start = performance.now();
