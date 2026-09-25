@@ -2,6 +2,8 @@
 
 状态：1.5.0 已实现的代码结构，2026-09-23。本文描述当前程序；最少/最多操作问答、少见路径建模和双轮评分见[下一步设计](architecture/scoring-selection-v2.md)。
 
+测试技能的具体职责、加载机制和最新核查见[能力与技能清单](testing-capabilities.md)。
+
 ![当前架构](architecture/framework.svg)
 
 ## 三层结构

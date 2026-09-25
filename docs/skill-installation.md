@@ -1,5 +1,7 @@
 # 给编码模型的独立技能安装包
 
+这里说明如何把 askJEV 交给编码 Agent 调用。Agent 内部已有的五个测试技能、它们实际做什么，以及调用侧 `askjev-agent` / `pi-test` 的区别，见[能力与技能清单](testing-capabilities.md)。无需分别安装五个内部技能。
+
 **请使用你的 ChatGPT Codex 安装该技能。** 将 `askjev-agent-skill-1.5.0.tar.gz` 交给具有本地文件和终端执行能力的编码 Agent，并要求它解压后执行 `askjev-agent/scripts/install.mjs`。安装脚本完成真正的依赖安装；只读取或复制 SKILL.md 不会自动执行程序。
 
 可以直接对编码 Agent 说：

@@ -6,7 +6,7 @@ askJEV Agent 基于 Pi Agent 内核，把需求、源码快照、测试生成、
 
 当前版本 **1.5.0 · 工程试用版**。支持选定 JavaScript 模块与本地静态页面的 Chrome 功能测试。测试在本机执行，生成服务与评分服务独立配置。
 
-[快速开始](#快速开始) · [当前架构](docs/framework.md) · [评分如何实现](docs/architecture/scoring-selection-v2.md#当前评分的实际实现) · [新测试流程设计](docs/architecture/scoring-selection-v2.md#目标流程先明确用户操作再测试) · [质量报告](docs/quality-review-2026-09-23.md)
+[实际完成度与测试技能](docs/testing-capabilities.md) · [快速开始](#快速开始) · [当前架构](docs/framework.md) · [评分如何实现](docs/architecture/scoring-selection-v2.md#当前评分的实际实现) · [新测试流程设计](docs/architecture/scoring-selection-v2.md#目标流程先明确用户操作再测试) · [质量报告](docs/quality-review-2026-09-23.md)
 
 ## 能做什么
 
@@ -17,6 +17,8 @@ askJEV Agent 基于 Pi Agent 内核，把需求、源码快照、测试生成、
 | 评分与选测 | JEV 提供场景级支持度；默认执行全部候选，显式选测会列出未测试项 |
 | 多轮与后台 | `campaign` 在总预算内分轮补查并复现失败；`session` 管理后台任务和持久对话 |
 | 修复闭环 | 向编码 Agent 交接缺陷；修复后复用字节不变的原测试回归，并记录反馈 |
+
+内置 `brainstorming`、`ask-jev`、`writing-tests`、`browser-tests`、`bugs` 五个测试技能。Node 任务加载其中四个，浏览器任务追加 `browser-tests`；运行时记录实际加载版本。职责、调用方式与 2026-09-25 的可用状态见[能力与技能清单](docs/testing-capabilities.md)。
 
 ## 快速开始
 
