@@ -4,6 +4,8 @@
 
 独立 CLI 与框架说明见 `docs/cli.md`、`docs/framework.md`；排查能力缺口见 `docs/diagnostic-roadmap.md`。本地测试智能体 MVP 的入口为根目录 `README.md`、`docs/mvp/plan.md` 和 `docs/mvp/evaluation.md`。默认使用已验证的 Flash 直连生成模型，`askJEV` 通过私密配置连接已有云端 Open JEV；新版运行证据默认保存在 `~/.askjev-agent/runs/`，历史证据保存在被忽略的 `artifacts/`。不要把评分当作用户操作概率或独立正确率。默认 all 执行全部候选；用户显式设置 lowest/highest/range 时，仅执行选中的候选，未测项不能记为通过。Pi 编写与执行业务测试，Codex 修改业务实现后通过 CLI 复用原测试回归。
 
+实际完成度与内置测试技能从 `docs/testing-capabilities.md` 开始，历史验证索引见 `docs/evidence/README.md`。区分已实现能力、核查当日连接状态与未来设计；旧版验收不代表当前服务在线。`skills/codex/pi-test` 是兼容调用入口，不是第二套测试 Agent。
+
 1.1 真实 GitHub 仓库验证与当前完成度见 `docs/mvp/github-evaluation.md`。通过 `handoff` 读取缺陷交接，修复后用 `regress` 和 `feedback` 记录闭环；不要把多个失败用例重复计为独立缺陷。上游源码保留在本机 `artifacts/github/` 的固定提交，修复在独立副本完成。
 
 ## 工作边界

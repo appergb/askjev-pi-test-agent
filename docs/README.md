@@ -1,51 +1,36 @@
 # askJEV Agent 文档
 
-从 [当前框架](framework.md) 理解终端、本地运行时和模型服务；[评分与行为探索设计](architecture/scoring-selection-v2.md) 分别说明现有单轮评分和待实现的最少操作起点、少见路径与双轮评估。[本机入口整理](local-installation.md) 解释 `pi`、`pi-web`、`askjev-cli` 与 `askjev` 的关系。
+先看[当前完成度与测试技能](testing-capabilities.md)：区分已实现功能、当前连接状态、历史验证和未来设计。当前版本为 1.5.0，适用于选定 JavaScript 模块与本地静态页面的工程试用。
 
-最新发布质量、终端前端/后端完成度与比赛演示评估见 [2026-09-23 质量报告](quality-review-2026-09-23.md)。
+## 按目的阅读
 
-持续测试见 [campaigns.md](campaigns.md)。
+| 你要做什么 | 入口 |
+| --- | --- |
+| 看实际做到什么程度、有哪些测试技能 | [能力与技能清单](testing-capabilities.md) · [待补齐能力](diagnostic-roadmap.md) |
+| 安装并开始使用 | [根 README](../README.md) · [Skill 安装](skill-installation.md) · [本机入口整理](local-installation.md) |
+| 使用终端或脚本运行测试 | [CLI](cli.md) · [任务格式](mvp/configuration.md) · [浏览器测试](frontend-testing.md) |
+| 持续补查或后台执行 | [有预算的多轮测试](campaigns.md) · [会话管理](sessions.md) |
+| 理解前端、运行时和模型服务的分工 | [当前框架](framework.md) · [架构图](architecture/framework.svg) |
+| 理解实际评分和下一步设计 | [评分机制、最少操作与双轮评估](architecture/scoring-selection-v2.md) |
+| 核查结果与证据 | [验收摘要索引](evidence/README.md) · [质量与比赛演示评估](quality-review-2026-09-23.md) |
+| 了解 GPU 使用与云节点边界 | [NVIDIA 技术清单](architecture/nvidia-stack.md) · [节点说明](agent.md) · [云节点文档](cloud-node/README.md) |
 
-编码模型技能安装见 [skill-installation.md](skill-installation.md)，会话管理见 [sessions.md](sessions.md)。
+1.5 已有多轮测试、质量诊断与显式评分故障降级。最少/最多操作问答、最短成功路径建模、双轮评分、独立断言复核与校准仍属设计，不能因存在架构图而视为已实现。
 
-评分选测目标架构见 [设计文档](architecture/scoring-selection-v2.md) 与 [SVG](architecture/scoring-selection-v2.svg)；NVIDIA 技术核对见 [技术清单](architecture/nvidia-stack.md)。1.5 已实现质量诊断与显式故障降级；hybrid 与校准仍为目标设计。
+## 历史与项目资料
 
-独立 CLI 使用见 [cli.md](cli.md)，架构见 [framework.md](framework.md)，排查能力缺口见 [diagnostic-roadmap.md](diagnostic-roadmap.md)。
+[MVP 计划](mvp/plan.md)、[早期评估](mvp/evaluation.md)及 [1.1 真实仓库评估](mvp/github-evaluation.md)保留当时的范围和结果。当前能力以新版清单、源代码和对应实际运行记录为准；历史服务成功不等于现在在线。
 
-本目录按来源和用途整理项目资料。公开文档只保留可提交到 GitHub 的脱敏内容，精确 IP、端口、密码、API Key、原始表格和原始手册均放在本地私密区，并由 `.gitignore` 排除。
+| 分区 | 内容 |
+| --- | --- |
+| [evidence/](evidence/README.md) | 可公开的脱敏验收摘要；原始日志、快照和测试保留在本机 |
+| [project/](project/README.md) | 本地开发、GitHub 同步和发布边界 |
+| [cloud-node/](cloud-node/README.md) | 节点能力、部署记录和环境说明；精确连接资料仅本地 |
+| [plan/](plan/README.md) | Plan 接入说明；地址和凭据仅本地 |
+| `private/` | 原始表格、手册和连接资料，不提交 |
 
-## 文档分区
+## 云节点与私密资料
 
-| 分区 | 内容 | GitHub 状态 |
-| --- | --- | --- |
-| [agent.md](agent.md) | 节点能力、资源和操作边界 | 可提交，已脱敏 |
-| [cloud-node/](cloud-node/README.md) | Spark 节点登录、访问手册、环境与包清单 | 说明可提交，精确资料仅本地 |
-| [plan/](plan/README.md) | Plan 连接方式和 SDK 配置 | 说明可提交，地址和密钥仅本地 |
-| [project/](project/README.md) | 本地开发、GitHub 和云端同步 | 可提交，已脱敏 |
-| [mvp/plan.md](mvp/plan.md) | Pi 测试智能体 MVP 范围、使用配置和真实评估 | 可提交，运行证据仅本机 |
-| [evidence/](evidence/README.md) | 从真实运行提取的脱敏验收摘要 | 可提交 |
-| `private/` | 原始 `xlsx`、`docx`、Plan 地址和本地登录资料 | 永不提交 |
+云节点操作前阅读 [agent.md](agent.md) 和 [cloud-node/README.md](cloud-node/README.md)。连接已有服务与部署服务是不同操作；本地测试安装不包含云端部署。新仓库发布仅同步代码，云端更新需要独立的部署需求。
 
-## 使用顺序
-
-本地 Pi 测试 MVP 从项目根目录 [README](../README.md) 开始；实际验收结果见 [MVP 评估](mvp/evaluation.md)。
-
-最新 1.1 真实项目验证、缺陷反馈与完成度见 [GitHub 仓库评估](mvp/github-evaluation.md)。
-
-1. 先读 [agent.md](agent.md)，了解节点能力和禁止事项。
-2. 云节点操作读 [cloud-node/README.md](cloud-node/README.md)。精确登录信息只读本地的 `cloud-node/login.local.md`。
-3. Plan 接入读 [plan/README.md](plan/README.md)。原始连接资料只读本地 `private/`，不复制密钥到代码或公开文档。
-4. Git 工作流读 [project/README.md](project/README.md)。新仓库发布仅同步代码；云端拉取需要独立确认仓库权限和部署需求。
-
-## 私密资料位置
-
-本地私密资料包括：
-
-- `docs/cloud-node/login.local.md`
-- `docs/cloud-node/access.local.md`
-- `docs/cloud-node/agent.local.md`
-- `docs/cloud-node/environment.local.md`
-- `docs/project/git-workflow.local.md`
-- `docs/private/source/`
-
-这些文件和目录已写入 `.gitignore`。不要通过 `git add -f` 强制加入。
+精确 IP、端口、密码、API Key、原始资料放在被忽略的本地区域，包括 `docs/cloud-node/*.local.md`、`docs/project/git-workflow.local.md` 与 `docs/private/`。不要强制加入 Git。公开目录只保留脱敏说明。
