@@ -8,7 +8,22 @@ import { executeTest } from './execution.mjs';
 import { runsHome } from './paths.mjs';
 import { renderReport } from './runner.mjs';
 
+// Frozen selection comparison: re-execute saved tests against the saved
+// snapshot reusing saved scores — no model involvement. Three identity gates
+// (artifact binding, snapshot_id equality, test byte hashes) make a policy
+// comparison valid.
+
 // A controlled comparison uses saved source, scores and tests, never a new model response.
+/**
+ * Compare a selection policy on frozen inputs. Loads the prior run's
+ * artifacts, verifies they belong together and are unmodified, re-snapshots
+ * the saved workspace, then executes only the newly selected cases.
+ * @param {string} from Prior run directory.
+ * @param {object} policy Selection policy to evaluate (default all).
+ * @param {object} [options] { signal?, outputRoot? }.
+ * @returns {Promise<object>} Replay result envelope (type selection_replay).
+ * @throws {Error} On identity-gate violations.
+ */
 export async function replay(from, policy, { signal, outputRoot = runsHome() } = {}) {
   const started = performance.now();
   const priorDir = await fs.realpath(from);
@@ -17,6 +32,7 @@ export async function replay(from, policy, { signal, outputRoot = runsHome() } =
   const prepared = await readJSON(path.join(priorDir, 'prepared.json'));
   const scores = await readJSON(path.join(priorDir, 'scores.json'));
   const tests = await readJSON(path.join(priorDir, 'tests.json'));
+  // Gate 1: every loaded artifact must reference the same run and snapshot.
   check(prepared.run_id === prior.run_id && scores.run_id === prior.run_id && scores.snapshot_id === prior.snapshot_id && prepared.snapshot_id === prior.snapshot_id, 'Comparison artifacts do not belong to one snapshot');
   const browser = task.execution?.type === 'browser';
   check(tests.length === prepared.items.length && new Set(tests.map((t) => t.case_id)).size === tests.length && tests.every((t) => safeName(t.case_id) && prepared.items.some((i) => i.case_id === t.case_id) && t.file === `tests/${t.case_id}.${browser ? 'browser.json' : 'test.mjs'}`), 'Comparison requires all original test plans');
@@ -27,9 +43,11 @@ export async function replay(from, policy, { signal, outputRoot = runsHome() } =
   const dir = path.resolve(outputRoot, run_id);
   await fs.mkdir(path.join(dir, 'evidence'), { recursive: true, mode: 0o700 });
   const snap = await snapshot(task, dir);
+  // Gate 2: the re-created snapshot must hash identically to the saved one.
   check(snap.snapshot_id === prior.snapshot_id, 'Saved source changed; scores cannot be reused');
   for (const t of tests) {
     const bytes = await fs.readFile(path.join(priorDir, 'workspace', t.file));
+    // Gate 3: saved test bytes must be unchanged.
     check(sha(bytes) === t.sha256, 'Saved tests changed; comparison refused');
     await fs.writeFile(path.join(snap.workspace, t.file), bytes, { mode: 0o400 });
   }
