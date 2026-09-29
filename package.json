@@ -64,6 +64,15 @@
     "docs/campaigns.md",
     "docs/evidence/campaign-1.5.json",
     "docs/quality-review-2026-09-23.md",
-    "docs/evidence/quality-review-2026-09-23.json"
+    "docs/evidence/quality-review-2026-09-23.json",
+    "docs/README.md",
+    "docs/code-tour.md",
+    "docs/evidence/README.md",
+    "docs/evidence/spark-tuning-2026-09-23.json",
+    "docs/evidence/ninfer-ternary-2026-09-25.json",
+    "docs/mvp/github-evaluation.md",
+    "docs/assets/",
+    "examples/github-klona/",
+    "scripts/prepare-github-example.mjs"
   ]
 }
