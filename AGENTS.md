@@ -19,6 +19,7 @@
 ## 文档入口
 
 - `docs/README.md`：文档索引和当前状态。
+- `docs/code-tour.md`：源码阅读顺序、数据流走查与扩展指南。
 - `docs/agent.md`：节点详细信息、能力边界和操作约定。
 - `docs/cloud-node/`：云节点登录资料、访问手册、环境快照和包清单。
 - `docs/plan/`：Plan 连接地址和脱敏接入说明。

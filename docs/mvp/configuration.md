@@ -24,7 +24,7 @@
 - files 明确列出允许读取的相对路径；不允许隐藏文件、private、credentials、符号链接或目录穿越。
 - requirement_file 必须包含在 files 中；总源码上下文上限 16 KB。
 - objective 为本次目标，model 为配置别名，可由 CLI --model 覆盖。
-- budget 设置总时长、检查项上限、模型轮次和测试修正次数，均有有限上限。
+- budget 设置总时长（10–1800 秒）、检查项（1–12，`min_cases` 可选）、模型轮次（1–40）和测试修正次数（1–3）。campaign 的总预算（轮数 1–20、总时间 10–21600 秒、累计轮次 1–400）是另一层独立限制，见 [campaigns](../campaigns.md)。
 
 1.1 新增：budget.min_cases 可要求最低检查项数，避免模型在出错后缩减到单一冒烟测试。原始 .js/.mjs/.cjs 文件均可选入，不需要改名；包的 module type 由快照中的 package.json 与 Node.js 解释规则决定。
 

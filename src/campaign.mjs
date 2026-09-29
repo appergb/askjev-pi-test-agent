@@ -6,6 +6,19 @@ import { runTask } from './runner.mjs';
 import { replay } from './replay.mjs';
 import { runsHome } from './paths.mjs';
 
+// Multi-round test campaigns: repeated fresh-state discovery runs against one
+// immutable snapshot, with per-round reproduction of failures and stagnation
+// detection. Campaign budgets are a second, independent layer on top of each
+// run's own task budget.
+
+/**
+ * Validate and default the campaign-level budget. Bounds here (rounds,
+ * wall-clock seconds, model turns, stagnation) are separate from and applied
+ * on top of each round's task budget in common.mjs.
+ * @param {object} [options] { rounds?, max_seconds?, max_model_turns?, stagnation_rounds? }.
+ * @returns {object} Fully defaulted limits object.
+ * @throws {Error} On any out-of-range or non-integer value.
+ */
 export function campaignLimits(options = {}) {
   const limits = { rounds: options.rounds ?? 3, max_seconds: options.max_seconds ?? 600, max_model_turns: options.max_model_turns ?? 60, stagnation_rounds: options.stagnation_rounds ?? 2 };
   for (const [key, min, max] of [['rounds', 1, 20], ['max_seconds', 10, 21600], ['max_model_turns', 1, 400], ['stagnation_rounds', 1, 20]]) {
@@ -13,11 +26,25 @@ export function campaignLimits(options = {}) {
   }
   return limits;
 }
+// Local write-then-rename helper (0600). Duplicated from sessions.mjs on
+// purpose: importing that module here would create a require cycle through
+// campaign -> sessions -> campaign.
 const atomicJSON = async (file, value) => {
   await fs.writeFile(file + '.next', json(value), { mode: 0o600 });
   await fs.rename(file + '.next', file);
 };
+/** Deep-clone with object keys sorted, so JSON text is order-insensitive. */
 const canonical = (value) => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])])) : value;
+/**
+ * Fingerprint a test's duplicate-worthy content: source ref, requirement ref
+ * and a normalized view of the code. For browser plans, consecutive read-only
+ * assertion steps are sorted so reordered checks still count as the same
+ * scenario. This is a stopping heuristic only — never evidence of equivalence.
+ * @param {object} item Prepared inspection item.
+ * @param {string} code Test file content.
+ * @param {boolean} browser Whether the code is a browser-plan-v1 JSON.
+ * @returns {string} SHA-256 fingerprint recorded in coverage statistics.
+ */
 export function testFingerprint(item, code, browser) {
   // Only a stopping heuristic. Original plans remain byte-identical and execute in original order.
   // Consecutive read-only assertions cover the same checks even when their order changes.
@@ -38,9 +65,20 @@ export function testFingerprint(item, code, browser) {
 
 // Finite, sequential discovery. Each round gets fresh agent state and immutable source.
 // Persist completed rounds before reproduction so a crash cannot erase their evidence.
+/**
+ * Run a bounded discovery campaign: up to N rounds of runTask against one
+ * frozen snapshot, deduplicating scenarios via test fingerprints, then a
+ * replay-based reproduction pass for any round that produced failures.
+ * @param {object} input Task document (validated clone is used).
+ * @param {object} config Resolved private config (models, scoring).
+ * @param {object} [options] { rounds?, max_seconds?, max_model_turns?, stagnation_rounds?, signal?, outputRoot?, model?, progress? }.
+ * @param {object} [dependencies] { runTask?, replay? } — injection seam for tests.
+ * @returns {Promise<object>} Campaign result envelope (type test_campaign).
+ */
 export async function runCampaign(input, config, options = {}, dependencies = {}) {
   const task = validateTask(structuredClone(input));
   const limits = campaignLimits(options);
+  // Injection seam: tests substitute in-memory runTask/replay doubles.
   const run = dependencies.runTask ?? runTask;
   const reproduce = dependencies.replay ?? replay;
   const started = performance.now();
@@ -71,6 +109,7 @@ export async function runCampaign(input, config, options = {}, dependencies = {}
     try { await verifySnapshot(frozen); } catch { const error = new Error('Source changed during campaign'); error.code = 'SOURCE_CHANGED'; throw error; }
   };
   const seen = new Set(), referenced = new Set(), history = [];
+  // Stagnation counter: consecutive rounds without a new test fingerprint.
   let stagnant = 0;
   try {
     frozen = await snapshot(task, directory);
@@ -134,6 +173,7 @@ export async function runCampaign(input, config, options = {}, dependencies = {}
       }
       stagnant = record.new_scenarios ? 0 : stagnant + 1;
       await save();
+      // Stop early when recent rounds keep re-testing the same scenarios.
       if (stagnant >= limits.stagnation_rounds) { result.stop_reason = 'no_new_scenarios'; break; }
     }
     await verifyFixed();

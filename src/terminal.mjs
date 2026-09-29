@@ -5,6 +5,11 @@ import os from 'node:os';
 import { parseArgs } from 'node:util';
 import { VERSION } from './common.mjs';
 
+// Interactive terminal entrypoint (`askjev-cli`): a TUI chat over the same
+// pipeline, with a fixed application-managed model. Deliberately narrower
+// than the CLI — no model menu, no settings commands. Requires a TTY.
+
+/** Slash commands offered to the user; also drives autocomplete and /help. */
 export const COMMANDS = [
   { name: 'help', description: '查看使用说明' },
   { name: 'run', description: '执行任务：/run <task.json>' },
@@ -27,6 +32,13 @@ Enter 发送 · Shift+Enter 换行 · Esc / Ctrl+C 停止任务 · Ctrl+D 退出
 配置和测试证据沿用 askjev；脚本与后台会话请继续使用 askjev。
 `;
 
+/**
+ * Split user input into { command, argument }: plain text becomes a 'chat'
+ * message; a leading slash selects a command; a single level of surrounding
+ * quotes is stripped from the argument (for paths with spaces).
+ * @param {string} text Raw editor input.
+ * @returns {{command: string, argument: string}} Parsed input.
+ */
 export function parseInput(text) {
   const input = text.trim();
   if (!input.startsWith('/')) return { command: 'chat', argument: input };
@@ -35,6 +47,15 @@ export function parseInput(text) {
   return { command, argument };
 }
 
+/**
+ * Build and run the TUI: transcript, status line, autocomplete editor and the
+ * input gates. Ordering matters — command handling (exit/cancel/help/model)
+ * and the busy check happen before any work is dispatched, so exactly one job
+ * runs at a time and cancellation always reaches the active controller.
+ * @param {object} deps { agent, terminal?, registerSignals? } — the agent
+ *   must expose clear/run/report/prompt/diagnose plus onEvent.
+ * @returns {Promise<void>} Resolves after the TUI closes and work drains.
+ */
 export async function runTerminal({ agent, terminal: providedTerminal, registerSignals = true }) {
   const { Container, Editor, Markdown, Text, Spacer, Loader, ProcessTerminal, TuiMainScreen, CombinedAutocompleteProvider, matchesKey, stripTerminalSequences, truncateToWidth, visibleWidth } = await import('@earendil-works/pi-tui');
   const clean = (text) => stripTerminalSequences(String(text)).replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, '');
@@ -109,6 +130,8 @@ export async function runTerminal({ agent, terminal: providedTerminal, registerS
     if (command === 'cancel') { if (busy) cancel(); else say('当前没有正在执行的任务。'); return; }
     if (command === 'help') { say(HELP); return; }
     if (['model', 'models', 'settings', 'login', 'logout'].includes(command)) { say('模型由应用配置固定，此界面不提供选择或切换。'); return; }
+    // Busy gate: input is restored to the editor instead of dropped, so the
+    // user can resend it after the current job finishes.
     if (busy) { editor.setText(input); say('当前任务正在进行。可按 Esc 停止，或等待完成后发送下一条。', '提示'); return; }
     if (command !== 'chat' && !COMMANDS.some((entry) => entry.name === command)) { say('未知命令。输入 /help 查看可用命令。', '提示'); return; }
     if (command === 'run' && !argument) { say('用法：/run <task.json>。路径包含空格时可加引号。', '提示'); return; }
@@ -141,6 +164,8 @@ export async function runTerminal({ agent, terminal: providedTerminal, registerS
     if (busy && !activeWork) { activeWork = work; void work.finally(() => { activeWork = undefined; }); }
   };
   tui.addInputListener((data) => {
+    // Ctrl+C is three-way: cancel the active job, else clear pending input,
+    // else close the terminal (the classic double-press to exit).
     if (matchesKey(data, 'ctrl+c')) {
       if (busy) cancel(); else if (editor.getText()) editor.setText(''); else close();
       return { consume: true };
@@ -149,6 +174,8 @@ export async function runTerminal({ agent, terminal: providedTerminal, registerS
     if (matchesKey(data, 'escape') && busy) { cancel(); return { consume: true }; }
     return undefined;
   });
+  // Process-level signals mirror the in-TUI keys: Ctrl+C cancels work if any,
+  // otherwise exits; TERM/HUP always close (cancel first, evidence is kept).
   const interrupt = () => { if (busy) cancel(); else close(); };
   const signalHandlers = { SIGINT: interrupt, SIGTERM: close, SIGHUP: close };
   if (registerSignals) for (const [name, handler] of Object.entries(signalHandlers)) process.on(name, handler);
@@ -167,10 +194,18 @@ export async function runTerminal({ agent, terminal: providedTerminal, registerS
   }
 }
 
+/**
+ * Entrypoint for `askjev-cli`: parse --project/--config, enforce the TTY
+ * requirement, then hand off to runTerminal. Scripted callers are pointed at
+ * the `askjev` CLI instead (the error message below says so).
+ * @param {string[]} [args] argv tail (defaults to process.argv).
+ * @returns {Promise<void>} Throws TTY_REQUIRED / INVALID_PROJECT when unusable.
+ */
 export async function main(args = process.argv.slice(2)) {
   const { values } = parseArgs({ args, options: { project: { type: 'string' }, config: { type: 'string' }, help: { type: 'boolean', short: 'h' }, version: { type: 'boolean', short: 'v' } } });
   if (values.help) { process.stdout.write(HELP); return; }
   if (values.version) { process.stdout.write(`askJEV ${VERSION}\n`); return; }
+  // The TUI cannot render or read keys without a real terminal on both ends.
   if (!process.stdin.isTTY || !process.stdout.isTTY) throw new Error('TTY_REQUIRED');
   const cwd = path.resolve(values.project || process.cwd());
   if (!(await fs.stat(cwd)).isDirectory()) throw new Error('INVALID_PROJECT');

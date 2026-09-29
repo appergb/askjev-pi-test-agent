@@ -12,6 +12,19 @@ import { recordFeedback } from './handoff.mjs';
 import { configPath, runsHome } from './paths.mjs';
 import { initialize, createExample, connect, doctor, probeModel } from './application.mjs';
 
+// Scripted entrypoint (`askjev`): argparse-style dispatch to the pipeline,
+// session lifecycle, campaign, replay and diagnostics commands. Business
+// results go to stdout as JSON; progress and help go to stderr/stdout text.
+// The process exit code is part of the automation contract (see exitCode).
+
+/**
+ * Map a result envelope onto the documented exit-code contract: 0 success,
+ * 1 confirmed findings, 3 execution failure, 4 incomplete/inconclusive,
+ * 5 cancelled. (Exit 2 is reserved for input/config errors thrown as
+ * exceptions and handled by the top-level catch below.)
+ * @param {object} result Result envelope with run_status and assessment.
+ * @returns {number} Process exit code 0 | 1 | 3 | 4 | 5.
+ */
 export function exitCode(result) {
   if (result.run_status === 'cancelled') return 5;
   if (result.run_status === 'partial') return 4;
@@ -48,9 +61,18 @@ const HELP = `askJEV Agent ${VERSION} — 优化过的 Agent 框架
 退出码：0 成功，1 发现缺陷，2 输入或配置无效，3 执行失败，4 未完成，5 已取消。
 本地测试执行支持 macOS；DGX Spark 承载远程推理与评分。
 `;
+/** Emit one business result as a single JSON line on stdout. */
 const output = (value) => process.stdout.write(JSON.stringify(value) + '\n');
+/** Wrap a non-run command result so it always carries the envelope fields. */
 const complete = (value) => ({ schema_version: '1.0', application: 'askJEV Agent', version: VERSION, run_status: value.ok === false ? 'failed' : 'completed', assessment: value.ok === false ? 'inconclusive' : 'no_confirmed_findings', ...value });
 
+/**
+ * Parse argv, dispatch the command and map results/exit codes. Long-running
+ * commands share one AbortController wired to SIGINT/SIGTERM; every thrown
+ * check() failure is normalized by the top-level catch into a coded JSON
+ * error with exit code 2.
+ * @returns {Promise<void>} Process exit code carries the outcome.
+ */
 async function main() {
   const options = Object.fromEntries(['config', 'request', 'model', 'from', 'regression', 'project', 'output', 'directory', 'import-config', 'select', 'count', 'min-score', 'max-score', 'id', 'name', 'rounds', 'max-seconds', 'max-model-turns', 'scoring-failure'].map((key) => [key, { type: 'string' }]));
   Object.assign(options, { help: { type: 'boolean', short: 'h' }, version: { type: 'boolean', short: 'v' }, probe: { type: 'boolean' }, browser: { type: 'boolean' } });
@@ -73,6 +95,8 @@ async function main() {
     else {
       check(values.id, 'session action requires --id');
       const selection = values.select ? { mode: values.select, count: Number(values.count), min: Number(values['min-score']), max: Number(values['max-score']) } : undefined;
+      // Shadows the outer `options` (parseArgs schema) deliberately: this is
+      // the startSession/restartSession option bag, scoped to this branch.
       const options = { request: values.request, config: values.config, model: values.model, selection, scoring_failure: values['scoring-failure'], ...(action === 'campaign' ? { campaign: { ...(values.rounds !== undefined ? { rounds: Number(values.rounds) } : {}), ...(values['max-seconds'] !== undefined ? { max_seconds: Number(values['max-seconds']) } : {}), ...(values['max-model-turns'] !== undefined ? { max_model_turns: Number(values['max-model-turns']) } : {}) } } : {}) };
       if (action === 'inspect') value = await inspectSession(values.id);
       else if (action === 'logs') value = await sessionLogs(values.id);
@@ -92,6 +116,8 @@ async function main() {
     const result = await recordFeedback(values.from, values.regression);
     output(result); process.exitCode = result.overall_status === 'regression_passed' ? 0 : 4; return;
   }
+  // Shared cancellation for every long-running command below: one Ctrl+C
+  // aborts the pipeline (which stops model calls and the sandbox cleanly).
   const controller = new AbortController();
   const cancel = () => controller.abort();
   process.on('SIGINT', cancel); process.on('SIGTERM', cancel);
@@ -125,6 +151,8 @@ async function main() {
         result = command === 'campaign' ? await runCampaign(task, config, { ...runOptions, ...(values.rounds !== undefined ? { rounds: Number(values.rounds) } : {}), ...(values['max-seconds'] !== undefined ? { max_seconds: Number(values['max-seconds']) } : {}), ...(values['max-model-turns'] !== undefined ? { max_model_turns: Number(values['max-model-turns']) } : {}) }) : await runTask(task, config, runOptions);
       }
     }
+    // A Ctrl+C during any command normalizes to the cancelled status, so the
+    // exit-code contract (5) holds uniformly.
     if (controller.signal.aborted) result.run_status = 'cancelled';
     output(result); process.exitCode = exitCode(result);
   } finally { process.removeListener('SIGINT', cancel); process.removeListener('SIGTERM', cancel); }

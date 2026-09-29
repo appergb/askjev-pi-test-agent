@@ -11,6 +11,19 @@ import { executeTest } from './execution.mjs';
 const exec = promisify(execFile);
 import { appHome } from './paths.mjs';
 
+// Installation and diagnostics commands (`askjev init/example/connect/doctor`).
+// All outputs are coded result objects: raw provider, SSH or filesystem error
+// text never reaches the CLI surface.
+
+/**
+ * Write the private config into the app home. Uses flag 'wx' so an existing
+ * config is never silently overwritten; importing re-anchors relative
+ * credential/SSH paths to the imported file's directory.
+ * @param {string} [file] Target config path (default <appHome>/config.json).
+ * @param {string} [source] Config file to import (default bundled example).
+ * @returns {Promise<object>} { config_file, imported, next }.
+ * @throws {Error} When the target already exists or the source is invalid.
+ */
 export async function initialize(file, source) {
   const target = path.resolve(file || path.join(appHome(), 'config.json'));
   const config = await readJSON(source || path.join(ROOT, 'config/agent.example.json'));
@@ -26,6 +39,13 @@ export async function initialize(file, source) {
   return { config_file: target, imported: Boolean(source), next: 'Configure model credentials, then run askjev connect start and askjev doctor --probe.' };
 }
 
+/**
+ * Copy the bundled retry-demo example into a fresh directory and rewrite its
+ * task.json project path. The mkdir without 'recursive' refuses to reuse an
+ * existing directory.
+ * @param {string} directory Target directory for the demo project.
+ * @returns {Promise<object>} { project, request, note } paths for the CLI.
+ */
 export async function createExample(directory) {
   check(directory, 'example requires --directory');
   const target = path.resolve(directory);
@@ -37,6 +57,15 @@ export async function createExample(directory) {
   return { project: target, request: path.join(target, 'task.json'), note: 'Demo contains intentionally seeded defects.' };
 }
 
+/**
+ * Start/status/stop the SSH scoring tunnel by delegating to the bundled
+ * Python script. Best effort: any failure collapses to a coded
+ * SSH_CONNECTION_FAILED result with setup hints, never a thrown error.
+ * @param {string} action One of 'start' | 'status' | 'stop'.
+ * @param {string} file Private config file passed to the tunnel script.
+ * @param {AbortSignal} [signal] Cancellation signal.
+ * @returns {Promise<object>} { action, ok, already_running? } or coded failure.
+ */
 export async function connect(action, file, signal) {
   check(['start', 'status', 'stop'].includes(action), 'Use connect start, status or stop');
   // execFile passes arguments directly; connection identities and stderr never enter output.
@@ -49,6 +78,15 @@ export async function connect(action, file, signal) {
   }
 }
 
+/**
+ * Verify real model tool-calling: the model must invoke a probe tool with
+ * ok=true within 60 s. Output is drained without logging any provider text;
+ * all failures collapse to coded results.
+ * @param {object} config Resolved private config.
+ * @param {string} label Model alias to probe.
+ * @param {AbortSignal} [signal] Cancellation signal.
+ * @returns {Promise<object>} { alias, ok, tool_call_verified, duration_ms, error_code? }.
+ */
 export async function probeModel(config, label, signal) {
   const started = performance.now();
   const dir = await temporaryRuntime();
@@ -75,6 +113,15 @@ async function temporaryRuntime() {
   return fs.mkdtemp(path.join(root, 'probe-'));
 }
 
+/**
+ * Environment self-check behind `askjev doctor`: scoring reachability (with
+ * the HTTPS-or-loopback rule), sandbox execution, optional browser execution
+ * and optional live model probe. Each component reports independently; the
+ * top-level ok is their conjunction.
+ * @param {object} config Resolved private config.
+ * @param {object} [options] { probe?, model?, signal?, browser? }.
+ * @returns {Promise<object>} { ok, checks[], configured_models, generation_checked }.
+ */
 export async function doctor(config, { probe = false, model, signal, browser = false } = {}) {
   const checks = [];
   try {

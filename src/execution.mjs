@@ -3,7 +3,21 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { check } from './common.mjs';
 
+// macOS sandbox executor: runs a single node:test or uvu test file inside a
+// Seatbelt profile that denies network, fork and writes, parses TAP/summary
+// counters, and classifies every outcome — passed, assertion_failure,
+// test_error (broken generated test) or environment_error (sandbox/infra).
+
 function quoted(s) { return JSON.stringify(s); }
+/**
+ * Render the Seatbelt profile for one execution: a default-deny baseline with
+ * narrow allow rules — reads limited to system libraries and approved subpaths,
+ * writes only to /dev/null, process-exec limited to the resolved Node binary.
+ * @param {string} workspace Workspace root the test may read.
+ * @param {string} nodeBinary Realpath of the Node executable.
+ * @param {string[]} [readRoots] Extra readable subpaths (e.g. bundled node_modules).
+ * @returns {string} Seatbelt profile text (sandbox-exec scheme format).
+ */
 export function seatbeltProfile(workspace, nodeBinary, readRoots = []) {
   const reads = ['/System', '/Library/Apple', '/usr/lib', '/usr/share', '/private/var/db/dyld', '/opt/homebrew/Cellar', workspace, ...readRoots];
   return `(version 1)
@@ -20,6 +34,17 @@ export function seatbeltProfile(workspace, nodeBinary, readRoots = []) {
 `;
 }
 
+/**
+ * Execute one test file inside the Seatbelt sandbox and classify the result.
+ * macOS only. The child runs with a scrubbed environment and its combined
+ * output is capped, so neither host state nor a runaway test can leak in or
+ * exhaust the runner.
+ * @param {string} workspace Workspace directory to run in (realpath'd).
+ * @param {string} testFile Relative path of the test file inside workspace.
+ * @param {object} [options] { signal?, timeout?=10000, framework?='node-test', readRoots?=[] }
+ * @returns {Promise<object>} Execution record: exit info, counters, classification, timing.
+ * @throws {Error} On non-macOS platforms or an unknown framework.
+ */
 export async function executeTest(workspace, testFile, { signal, timeout = 10000, framework = 'node-test', readRoots = [] } = {}) {
   check(process.platform === 'darwin', 'MVP sandbox supports macOS only');
   const node = await fs.realpath(process.execPath);
@@ -45,6 +70,8 @@ export async function executeTest(workspace, testFile, { signal, timeout = 10000
     };
     const collect = (key, data) => {
       if (key === 'stdout') stdout += data; else stderr += data;
+      // Hard output cap: excess is truncated and the child is killed, so a
+      // runaway test cannot exhaust the runner's memory.
       if (stdout.length + stderr.length > 150000) { stdout = stdout.slice(0, 75000); stderr = stderr.slice(0, 75000); kill('output_limit'); }
     };
     child.stdout.on('data', (d) => collect('stdout', d.toString()));
@@ -52,6 +79,8 @@ export async function executeTest(workspace, testFile, { signal, timeout = 10000
     child.on('error', (e) => finish(null, e));
     child.on('close', (code, exitSignal) => finish(code, null, exitSignal));
   });
+  // TAP summary lines (# tests/pass/...) are authoritative for node:test; uvu
+  // prints plain-text totals with ANSI color codes, stripped below.
   const counts = Object.fromEntries(['tests', 'pass', 'fail', 'cancelled', 'skipped'].map((k) => [k, Number(result.stdout.match(new RegExp(`^# ${k} (\\d+)$`, 'm'))?.[1] ?? 0)]));
   if (framework === 'uvu') {
     const clean = result.stdout.replace(/\u001b\[[0-9;]*m/g, '');
@@ -62,6 +91,9 @@ export async function executeTest(workspace, testFile, { signal, timeout = 10000
   }
   const declaredTests = [...result.stdout.matchAll(/^# Subtest: (.+)$/gm)].filter((m) => ![testFile, path.basename(testFile), path.join(cwd, testFile)].includes(m[1]));
   const assertion_failure = result.exit_code !== 0 && /ERR_ASSERTION/.test(result.stdout);
+  // A pass requires exit 0, declared subtests, everything passing, none skipped.
+  // assertion_failure outranks test_error; environment_error dominates both —
+  // sandbox or infrastructure noise must never be reported as a product defect.
   let classification = result.exit_code === 0 && (framework === 'uvu' || declaredTests.length > 0) && counts.tests > 0 && counts.pass === counts.tests && counts.skipped === 0 ? 'passed' : assertion_failure ? 'assertion_failure' : 'test_error';
   if (result.spawn_error || result.stop_reason || result.exit_signal || /sandbox-exec:|Operation not permitted|EPERM|EACCES/.test(result.stderr + result.stdout)) classification = 'environment_error';
   return { ...result, counts, classification, assertion_failure, started_at, duration_ms: performance.now() - start, command, framework, sandbox: 'macos-seatbelt-restricted-v1' };

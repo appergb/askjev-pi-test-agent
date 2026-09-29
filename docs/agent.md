@@ -7,7 +7,7 @@
 - 平台：NVIDIA DGX Spark。
 - 系统：Ubuntu `24.04.4 LTS`，ARM64 / `aarch64`。
 - CPU：20 个在线 CPU，包含 10 个 `Cortex-X925` 和 10 个 `Cortex-A725` 核心。
-- 内存：约 `121 GiB`。
+- 内存：约 `121 GiB`（标称 128 GB 统一内存，与根 README 口径一致）。
 - GPU：`NVIDIA GB10`，驱动 `580.142`。
 - CUDA 编译器：`13.0`, `V13.0.88`。
 - Python：`3.14.6`，Conda `26.7.2`，Mamba `2.5.0`。

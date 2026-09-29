@@ -11,6 +11,7 @@
 | 使用终端或脚本运行测试 | [CLI](cli.md) · [任务格式](mvp/configuration.md) · [浏览器测试](frontend-testing.md) |
 | 持续补查或后台执行 | [有预算的多轮测试](campaigns.md) · [会话管理](sessions.md) |
 | 理解前端、运行时和模型服务的分工 | [当前框架](framework.md) · [架构图](architecture/framework.svg) |
+| 读懂源码结构与数据流 | [代码导览](code-tour.md) · [当前框架](framework.md) |
 | 理解实际评分和下一步设计 | [评分机制、最少操作与双轮评估](architecture/scoring-selection-v2.md) |
 | 核查结果与证据 | [验收摘要索引](evidence/README.md) · [质量与比赛演示评估](quality-review-2026-09-23.md) |
 | 了解 GPU 使用与云节点边界 | [NVIDIA 技术清单](architecture/nvidia-stack.md) · [节点说明](agent.md) · [云节点文档](cloud-node/README.md) |
