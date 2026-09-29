@@ -1,0 +1,183 @@
+{
+  "opening_beats": [
+    "你的项目",
+    "离交付",
+    "还有多远？"
+  ],
+  "brand_line": "测试 Agent · 1.5",
+  "tagline": "让每次交付更加安全、更加快速。",
+  "shots": [
+    {
+      "start": 0,
+      "end": 5.8,
+      "on_screen": [
+        "你的项目",
+        "离交付",
+        "还有多远？",
+        "askJEV",
+        "自研 agent"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 5.8,
+      "end": 9.52,
+      "on_screen": [
+        "coding agent 调用，askJEV 接手测试。",
+        "askjev run --request task.json --select all"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 9.52,
+      "end": 14,
+      "on_screen": [
+        "Code Files",
+        "requirements.md",
+        "app.js",
+        "测试场景",
+        "JEV 评分"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 14,
+      "end": 18.6,
+      "on_screen": [
+        "测试场景",
+        "JEV 评分",
+        "评分完成",
+        "当前任务：全部执行",
+        "满 100 元，仍收了 5 元运费。"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 18.6,
+      "end": 20,
+      "on_screen": [
+        "两处问题，交回修复。",
+        "SAVE10 只减了 5%"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 20,
+      "end": 27.36,
+      "on_screen": [
+        "askjev run --request task.json",
+        "一条指令，检查关键场景。",
+        "发现两处问题，交回 coding agent。",
+        "app.js · 两处修改"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 27.36,
+      "end": 29.6,
+      "on_screen": [
+        "NVIDIA DGX Spark",
+        "JEV GPU 评分 · 可选自托管生成",
+        "CUDA 推理"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 29.6,
+      "end": 33.6,
+      "on_screen": [
+        "askjev regress",
+        "修复完成。",
+        "askJEV 已返回结果，coding agent 继续工作。"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 33.6,
+      "end": 39.32,
+      "on_screen": [
+        "满 100 元，就该免运费。",
+        "修复前 5.00",
+        "修复后 0.00",
+        "真实 Chrome 页面 · 受控样例"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 39.32,
+      "end": 41.6,
+      "on_screen": [
+        "6 / 6",
+        "修复版 · 原测试全部通过",
+        "同一批浏览器测试 · 本地受控样例"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 41.6,
+      "end": 46.2,
+      "on_screen": [
+        "开始测试",
+        "coding agent",
+        "askJEV",
+        "JEV GPU 评分",
+        "可选自托管生成"
+      ],
+      "voiceover": ""
+    },
+    {
+      "start": 46.2,
+      "end": 50.48,
+      "on_screen": [
+        "askJEV",
+        "让每次交付更加安全、更加快速。",
+        "面向 AI 编码的自主测试 Agent",
+        "github.com/appergb/askjev-pi-test-agent"
+      ],
+      "voiceover": ""
+    }
+  ],
+  "ui": {
+    "dispatch_prompt": "检查优惠码和免运费，修好再测。",
+    "agent_header": "coding agent",
+    "dispatch_button": "派发任务",
+    "agent_recipient": "测试 Agent",
+    "hero": "测试交给 askJEV。",
+    "hero_small": "测试 Agent · 已接单",
+    "file_tree": [
+      "app.js",
+      "index.html",
+      "styles.css",
+      "requirements.md",
+      "优惠码",
+      "免运费",
+      "门店自提"
+    ],
+    "link_pills": [
+      "测试场景",
+      "JEV 评分"
+    ],
+    "timeline_title": "测试任务",
+    "task_running": "运行中",
+    "task_done": "已复测通过",
+    "handoff_button": "交回修复",
+    "terminal_command": "askjev run --request task.json",
+    "complete": "本轮完成",
+    "check_button": "开始测试",
+    "issue_title": "免运费没生效",
+    "issue_action": "已修复 · 已复测",
+    "launch": "再跑一次"
+  },
+  "rejected_phrases": [
+    "把下单流程整个测一遍",
+    "路径自己铺",
+    "测试任务线",
+    "确认交付",
+    "开工（单独作大字）",
+    "让每次交付有据可依",
+    "一句需求，Pi 开始测试",
+    "实际证据",
+    "六项原测试",
+    "字节保持不变"
+  ]
+}

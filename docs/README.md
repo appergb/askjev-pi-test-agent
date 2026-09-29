@@ -2,6 +2,8 @@
 
 先看[当前完成度与测试技能](testing-capabilities.md)：区分已实现功能、当前连接状态、历史验证和未来设计。当前版本为 1.5.0，适用于选定 JavaScript 模块与本地静态页面的工程试用。
 
+DGX Spark 的 Token 输出、prefill 与内存调优见 [2026-09-23 实测记录](cloud-node/spark-tuning-2026-09-23.md)。
+
 ## 按目的阅读
 
 | 你要做什么 | 入口 |

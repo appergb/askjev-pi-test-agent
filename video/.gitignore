@@ -1,0 +1,6 @@
+studio/node_modules/
+studio/out/
+analysis/
+exports/*
+!exports/askjev-motion-1080p.mp4
+.DS_Store

@@ -191,6 +191,10 @@ askJEV Agent 将需求理解、测试生成、GPU 评分、真实执行和修复
 
 ## 三分钟 Demo
 
+[观看约 50 秒宣传片](video/exports/askjev-motion-1080p.mp4) · [查看可编辑工程](video/README.md)
+
+[![askJEV 宣传片封面](video/cover.png)](video/exports/askjev-motion-1080p.mp4)
+
 ### 演示内容安排
 
 演示主线使用已有购物样例，突出从需求到修复验证的完整过程。下表是建议录制与讲解节奏，现场等待以实际运行结果为准。
