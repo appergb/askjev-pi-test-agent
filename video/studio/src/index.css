@@ -1,0 +1,50 @@
+@import "tailwindcss/theme";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+ --color-background:var(--background);
+ --color-foreground:var(--foreground);
+ --color-card:var(--card);
+ --color-card-foreground:var(--foreground);
+ --color-popover:var(--card);
+ --color-popover-foreground:var(--foreground);
+ --color-primary:var(--primary);
+ --color-primary-foreground:var(--primary-foreground);
+ --color-secondary:var(--accent);
+ --color-secondary-foreground:var(--foreground);
+ --color-muted:var(--muted);
+ --color-muted-foreground:var(--muted-foreground);
+ --color-accent:var(--accent);
+ --color-accent-foreground:var(--foreground);
+ --color-destructive:#ef4444;
+ --color-border:var(--border);
+ --color-input:var(--border);
+ --color-ring:var(--ring);
+ --color-sidebar:var(--sidebar);
+ --color-sidebar-foreground:var(--foreground);
+ --color-sidebar-primary:var(--primary);
+ --color-sidebar-primary-foreground:var(--primary-foreground);
+ --color-sidebar-accent:var(--accent);
+ --color-sidebar-accent-foreground:var(--foreground);
+ --color-sidebar-border:var(--border);
+ --color-sidebar-ring:var(--ring);
+ --radius-sm:4px;
+ --radius-md:6px;
+ --radius-lg:8px;
+ --radius-xl:12px;
+}
+.film-app {
+ --background:#fff;--foreground:#18181b;--card:#fff;--primary:#18181b;--primary-foreground:#fafafa;--accent:#eeeeef;--muted:#f4f4f5;--muted-foreground:#71717a;--border:#e4e4e7;--ring:#a1a1aa;--sidebar:#fafafa;
+ font-family:Inter,'Noto Sans SC',sans-serif;color:var(--foreground);font-size:14px;line-height:1.5;
+}
+.film-app.dark {
+ --background:#151517;--foreground:#ededf1;--card:#1d1d21;--primary:#fafafa;--primary-foreground:#18181b;--accent:#29292e;--muted:#25252a;--muted-foreground:#8d8d9a;--border:#333339;--ring:#71717a;--sidebar:#101012;
+}
+.film-app button {font-family:inherit;cursor:pointer;}
+.film-app svg {display:block;flex-shrink:0;}
+.film-app a {color:inherit;text-decoration:none;}
+.film-app [data-sidebar="sidebar"] {height:100%;}
+* {box-sizing: border-box;}
+body {margin: 0;}
+@source "./v9";

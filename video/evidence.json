@@ -1,0 +1,27 @@
+{
+  "original_run_id": "run-2026-09-22T11-00-08-965Z-cd67d0",
+  "original_statistics": {
+    "selected": 6,
+    "skipped": 0,
+    "planned": 6,
+    "scored": 6,
+    "executed_cases": 6,
+    "passed_cases": 4,
+    "failed_cases": 2,
+    "executed_tests": 6,
+    "confirmed_findings": 2,
+    "model_turns": 6,
+    "test_attempts": 6
+  },
+  "selection": "all",
+  "scoring_backend": "real",
+  "regression_run_id": "regression-52691724-bdc7-4985-869e-526308f48adc",
+  "regression_statistics": {
+    "executed_cases": 6,
+    "passed_cases": 6,
+    "failed_cases": 0
+  },
+  "tests_unchanged": true,
+  "feedback": "regression_passed",
+  "note": "Historical controlled fixture; restaged terminal visuals, original browser screenshots; no new cloud run."
+}

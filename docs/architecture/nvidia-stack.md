@@ -4,6 +4,8 @@
 
 后续验证：2026-09-23 已验收 DSpark 加固定内存池的生成配置，以及 Spark 自托管生成与 JEV 评分的业务闭环，见[脱敏测量](../evidence/spark-tuning-2026-09-23.json)。2026-09-25 的[三值模型候选](../evidence/ninfer-ternary-2026-09-25.json)完成评估后未切换生产，原 SGLang 服务已恢复。下文保留 2026-09-22 的技术基线；最新成果解读见[根 README](../../README.md#nvidia-dgx-spark-技术应用)。
 
+本文保留该日的核对快照。生成服务后续的 DSpark、固定内存池和性能验收见 [2026-09-23 调优记录](../cloud-node/spark-tuning-2026-09-23.md)，当前生成部署以新记录为准。
+
 ## 1. 可以对外使用的项目描述
 
 > askJEV Agent 针对 NVIDIA DGX Spark / GB10 完成了 JEV 评分服务和千问生成服务的部署适配与推理参数调优。评分使用 PyTorch CUDA、BF16 与 SDPA；自托管生成服务采用混合 NVFP4/FP8 checkpoint，通过 SGLang 配置 FlashInfer、FP8 KV cache、CUDA Graphs、前缀缓存和模型内置 MTP。两类服务分配内存与调度资源，共同支撑测试场景生成、评分和工具调用。

@@ -1,0 +1,266 @@
+{
+  "version": "9",
+  "date": "2026-09-29",
+  "file": "askjev-v9-1080p.mp4",
+  "sha256": "58586946fc0e3a8554edf162e63b68d48e78152898cf1699cb43375af03962ad",
+  "reference": {
+    "file": "25970939042-1-16.MP4",
+    "analysis": "32 full-film samples plus 5 fps motion strips"
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 25,
+    "frames": 1262,
+    "seconds": 50.48,
+    "container_seconds": 50.538667
+  },
+  "checks": {
+    "typescript": "passed",
+    "eslint": "passed",
+    "isolated_source_render": [
+      850,
+      920,
+      983,
+      984,
+      986,
+      988,
+      989,
+      990,
+      992,
+      994,
+      1103,
+      1161,
+      1255
+    ],
+    "copy_json_byte_identical_to_v8": true,
+    "scene_order_and_music_cues_unchanged": true,
+    "decoded_audio_identical_to_v8": true,
+    "v8_preserved": true
+  },
+  "transitions": {
+    "count": 8,
+    "duration_frames": [
+      10,
+      8,
+      8,
+      10,
+      14,
+      12,
+      10,
+      12
+    ],
+    "total_overlap_frames": 84,
+    "total_duration_preserved": true,
+    "iris_curve": "cubic-bezier(.65,0,.35,1), maximum radius 74%"
+  },
+  "audio": {
+    "integrated_lufs": -16.03,
+    "true_peak_dbfs": -2.72,
+    "pcm_sha256": "9d6afb6ae7cbe30019ec7e6c5f509432bb6ffb6c9523b91b4f85fc2cb5036c0d",
+    "channels": 2
+  },
+  "frame_check": {
+    "video": "askjev-v9-1080p.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 25.0,
+    "decoded_frames": 1262,
+    "start_frame": 0,
+    "suspected_tiling_count": 0,
+    "suspected_tiling_frames": [],
+    "largest_isolated_changes": [
+      {
+        "frame": 989,
+        "magnitude": 24.3531
+      },
+      {
+        "frame": 76,
+        "magnitude": 23.5562
+      },
+      {
+        "frame": 1041,
+        "magnitude": 22.3557
+      },
+      {
+        "frame": 741,
+        "magnitude": 15.893
+      },
+      {
+        "frame": 146,
+        "magnitude": 15.7849
+      },
+      {
+        "frame": 841,
+        "magnitude": 13.2525
+      },
+      {
+        "frame": 1139,
+        "magnitude": 11.8269
+      },
+      {
+        "frame": 239,
+        "magnitude": 10.7383
+      },
+      {
+        "frame": 1077,
+        "magnitude": 10.7359
+      },
+      {
+        "frame": 684,
+        "magnitude": 9.5533
+      },
+      {
+        "frame": 354,
+        "magnitude": 9.5377
+      },
+      {
+        "frame": 410,
+        "magnitude": 8.7057
+      },
+      {
+        "frame": 51,
+        "magnitude": 6.45
+      },
+      {
+        "frame": 245,
+        "magnitude": 5.6207
+      },
+      {
+        "frame": 501,
+        "magnitude": 5.2856
+      },
+      {
+        "frame": 100,
+        "magnitude": 4.7173
+      },
+      {
+        "frame": 210,
+        "magnitude": 3.1055
+      },
+      {
+        "frame": 441,
+        "magnitude": 2.9793
+      },
+      {
+        "frame": 459,
+        "magnitude": 2.965
+      },
+      {
+        "frame": 465,
+        "magnitude": 2.6641
+      },
+      {
+        "frame": 817,
+        "magnitude": 2.5742
+      },
+      {
+        "frame": 677,
+        "magnitude": 2.3458
+      },
+      {
+        "frame": 351,
+        "magnitude": 2.2496
+      },
+      {
+        "frame": 967,
+        "magnitude": 1.5193
+      },
+      {
+        "frame": 544,
+        "magnitude": 1.4163
+      },
+      {
+        "frame": 541,
+        "magnitude": 1.3517
+      },
+      {
+        "frame": 538,
+        "magnitude": 1.2492
+      },
+      {
+        "frame": 291,
+        "magnitude": 1.234
+      },
+      {
+        "frame": 1156,
+        "magnitude": 1.1567
+      },
+      {
+        "frame": 535,
+        "magnitude": 1.1375
+      },
+      {
+        "frame": 532,
+        "magnitude": 1.0742
+      },
+      {
+        "frame": 60,
+        "magnitude": 0.9747
+      },
+      {
+        "frame": 527,
+        "magnitude": 0.8812
+      },
+      {
+        "frame": 524,
+        "magnitude": 0.8011
+      },
+      {
+        "frame": 521,
+        "magnitude": 0.7215
+      },
+      {
+        "frame": 518,
+        "magnitude": 0.6962
+      }
+    ],
+    "scope": "Repeated-screen regression check; requires visual review of frame sheets and transitions."
+  },
+  "visual_review": {
+    "source_keyframes": 32,
+    "encoded_fullfilm_samples": 32,
+    "encoded_motion_strips_seconds": [
+      [
+        33.6,
+        39.6
+      ],
+      [
+        45.44,
+        48.16
+      ]
+    ],
+    "full_resolution_frames": [
+      860,
+      920,
+      1145
+    ],
+    "iris_frames": [
+      983,
+      984,
+      986,
+      988,
+      990,
+      992,
+      994
+    ],
+    "note": "Targeted visual review and automated full-frame decode; not a universal aesthetic score."
+  },
+  "motion_probe": {
+    "scope": "frames 900–964 in proof shot; pixel change detects motion only",
+    "results": [
+      {
+        "version": "v8",
+        "mean_frame_difference": 0.0006,
+        "nonzero_frames": 0,
+        "frames": 65
+      },
+      {
+        "version": "v9",
+        "mean_frame_difference": 0.5635,
+        "nonzero_frames": 65,
+        "frames": 65
+      }
+    ]
+  }
+}
