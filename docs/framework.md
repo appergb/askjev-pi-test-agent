@@ -43,7 +43,7 @@
 | `sessions.mjs` / `session-worker.mjs` | 后台进程、独立对话、同会话互斥、查询与取消 |
 | `handoff.mjs` / `replay.mjs` | 交接与回归反馈 / 冻结快照选测比较 |
 
-表内文件均位于 [`src/`](../src/)。API 认证代理及模型启动参考位于 [`deploy/spark/`](../deploy/spark/)，与本机测试工具分开维护。代理修复提交到 GitHub 不代表已经部署到云节点。
+表内文件均位于 [`src/`](../src/)。API 认证代理及模型启动参考位于 [`deploy/spark/`](../deploy/spark/)，与本机测试工具分开维护。代理修复提交到 GitHub 不代表已经部署到云节点。逐文件的阅读顺序、数据流走查与扩展指南见[代码导览](code-tour.md)。
 
 ## 数据与状态
 
